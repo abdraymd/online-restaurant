@@ -48,6 +48,7 @@ Open `ai/service-chatbot/.env` and set:
 | `OPENAI_API_KEY` | **yes** | Get from [platform.openai.com](https://platform.openai.com/api-keys) |
 | `SERVICE_KEY` | yes | Must match `backend/.env` `SERVICE_KEY` |
 | `BACKEND_API_URL` | yes | Change host from `localhost` → `backend` for Docker |
+| `OPENAI_CHAT_MODEL` | no | Defaults to `gpt-4o` |
 
 Docker-ready example:
 ```
@@ -58,6 +59,8 @@ PORT=8002
 OPENAI_CHAT_MODEL=gpt-4o
 ```
 
+The chatbot service also loads `ai/.env` before `ai/service-chatbot/.env`. This is useful when storing a shared OpenAI key in `ai/.env`; placeholder values in the service `.env` are ignored by the service code.
+
 ### Frontend
 
 ```bash
@@ -65,6 +68,14 @@ cp frontend/.env.example frontend/.env
 ```
 
 The default values work as-is for local Docker development (backend is reachable at `localhost:3000` from the browser).
+
+The AI assistant UI is available at:
+
+```
+http://localhost:5173/ai-assistant
+```
+
+It calls the backend proxy route `POST /api/v1/ai/chatbot/chat`; the browser should not call the Python AI service directly.
 
 ## 2. Start everything
 

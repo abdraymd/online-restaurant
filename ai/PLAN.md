@@ -5,7 +5,7 @@
 | # | Feature | Port | Tech | When it ships |
 |---|---------|------|------|---------------|
 | 1 | Semantic Search | 8001 | OpenAI embeddings + Chroma | Day 3 — no training data needed |
-| 2 | Chatbot Ordering Assistant | 8002 | GPT-4o + function calling | Day 6 — no training data needed |
+| 2 | Chatbot Ordering Assistant | 8002 | FastAPI + LangChain tool-calling agent + GPT-4o | Implemented MVP — no training data needed |
 | 3 | Review Sentiment Analysis | 8003 | GPT-4o-mini | Day 9 — retroactive on existing reviews |
 | 4 | Smart Upsell Engine | 8004 | Co-occurrence matrix | Day 13 — needs order history |
 | 5 | Personalized Recommendations | 8005 | ALS collaborative filtering | Day 16 — most data-hungry |
@@ -26,6 +26,15 @@
 | Validation | Pydantic v2 |
 | Environment | `python-dotenv` |
 | Dependency management | `pip` + `requirements.txt` per service |
+
+Implemented chatbot additions:
+
+| Concern | Current choice |
+|---------|----------------|
+| Agent framework | LangChain tool-calling agent |
+| Chat memory | `ConversationSummaryBufferMemory` per `sessionId` |
+| Backend HTTP client | `requests` in `service-chatbot` |
+| Frontend integration | React page `/ai-assistant` via backend proxy |
 
 ---
 
@@ -49,8 +58,8 @@ ai/
 │
 ├── service-chatbot/        # Chatbot Ordering Assistant — port 8002
 │   ├── main.py
-│   ├── tools.py            # Function definitions for GPT tool calling
-│   ├── session.py          # In-memory conversation session management
+│   ├── README.md           # Current service docs and troubleshooting
+│   ├── ai_Dana.md          # AI engineer protocol for this service
 │   ├── requirements.txt
 │   └── .env.example
 │
@@ -129,24 +138,26 @@ Response: { "results": [{ "id", "name", "type", "score", "restaurantId" }] }
 
 ---
 
-### Service 2 — Chatbot Ordering Assistant (port 8002)
+### Service 2 — Chatbot Ordering Assistant (port 8002) — Implemented MVP
 
 **Goal**: Let users describe what they want in natural language and get helped to build an order.
 
 **How it works**:
 1. User sends a message: "I want a large pepperoni pizza and a Coke"
-2. GPT-4o decides which tool(s) to call
-3. Service executes the tool, returns result to GPT-4o
-4. GPT-4o generates a natural language response
-5. Session state stored in memory keyed by `sessionId`
+2. Frontend calls backend proxy `POST /api/v1/ai/chatbot/chat`
+3. Backend forwards to the FastAPI chatbot `POST /chat` with `X-Service-Key`
+4. LangChain + GPT-4o decides which tool(s) to call
+5. Service executes backend/menu/cart/order tools
+6. GPT-4o generates a natural language response
+7. Session memory and AI cart are stored in process memory keyed by `sessionId`
 
 **Tools (function calling)**:
 ```python
 tools = [
-  search_menu(query, restaurantId),
-  add_to_cart(menuItemId, quantity),
+  search_menu(query),
+  add_to_cart(menuItemId, quantity, name, price, notes),
   view_cart(),
-  get_restaurant_info(restaurantId),
+  get_restaurant_info(),
   place_order(deliveryAddress),
 ]
 ```
@@ -157,6 +168,22 @@ POST /chat
 Body: { "sessionId": "abc123", "restaurantId": "...", "message": "I want a large pepperoni pizza" }
 Response: { "reply": "I found...", "cartUpdated": true, "cart": [...] }
 ```
+
+**Implemented files**:
+- `ai/service-chatbot/main.py`
+- `ai/service-chatbot/requirements.txt`
+- `ai/service-chatbot/README.md`
+- `ai/service-chatbot/ai_Dana.md`
+- `backend/src/modules/ai/ai.controller.ts`
+- `backend/src/modules/ai/ai.router.ts`
+- `frontend/src/api/ai.ts`
+- `frontend/src/pages/AiAssistantPage.tsx`
+
+**Current limitations**:
+- The AI cart is separate from the frontend Zustand cart.
+- Session state is in memory, so it resets when the AI service restarts.
+- Restaurant-specific tool actions require `restaurantId`.
+- Order placement requires a signed-in user if the backend order route requires auth.
 
 ---
 
@@ -238,12 +265,12 @@ Response: { "recommendations": [{ "menuItemId", "name", "restaurantId", "score" 
 10. Create `main.py` — FastAPI app with `POST /search` route + auth dependency
 11. Test: `curl -X POST http://localhost:8001/search -H "X-Service-Key: ..." -d '{"query":"pizza","limit":5}'`
 
-### Phase 3 — Chatbot Service (Days 4–6)
-12. `cd service-chatbot && pip install fastapi uvicorn openai python-dotenv pydantic httpx`
-13. Create `tools.py` — all 5 tool definitions matching OpenAI tool schema
-14. Create `session.py` — `dict[sessionId, list[Message]]` in-memory store, auto-expire after 30 min
-15. Create `main.py` — `POST /chat`: load session, call GPT-4o with tools, execute tool calls, return reply
-16. Test with a multi-turn conversation
+### Phase 3 — Chatbot Service (Days 4–6) — Completed MVP
+12. `cd service-chatbot && pip install -r requirements.txt`
+13. `main.py` defines FastAPI routes, LangChain tools, session memory, and cart state
+14. Backend proxy route implemented at `POST /api/v1/ai/chatbot/chat`
+15. Frontend AI assistant implemented at `/ai-assistant`
+16. Tested with direct `/chat` and backend proxy smoke requests
 
 ### Phase 4 — Sentiment Analysis Service (Days 7–9)
 17. `cd service-sentiment && pip install fastapi uvicorn openai python-dotenv pydantic`
@@ -288,6 +315,8 @@ CHROMA_PATH=./chroma_data          # only service-search
 PORT=8001                           # 8001–8005 per service
 ```
 
+For the implemented chatbot service, values are loaded from both `ai/.env` and `ai/service-chatbot/.env`. Service-specific values override shared values unless they are placeholders like `sk-your...` or `replace_with...`.
+
 ---
 
 ## 7. How to Run Locally
@@ -296,15 +325,15 @@ PORT=8001                           # 8001–8005 per service
 - Python 3.11+, pip
 - Backend running on port 3000
 
-### Start a single service
+### Start the implemented chatbot service
 ```bash
-cd ai/service-search
+cd ai/service-chatbot
 pip install -r requirements.txt
 cp .env.example .env   # fill in real values
-uvicorn main:app --reload --port 8001
+python3 -m uvicorn main:app --reload --port 8002
 ```
 
-### Start all 5 services (5 terminals)
+### Start all planned services (when implemented)
 ```bash
 cd ai/service-search && uvicorn main:app --reload --port 8001
 cd ai/service-chatbot && uvicorn main:app --reload --port 8002
@@ -327,6 +356,12 @@ bash ai/scripts/test_services.sh
 
 ### API docs
 FastAPI auto-generates Swagger UI at `http://localhost:800x/docs` for each service.
+
+For the current chatbot MVP:
+
+- AI service docs: `http://localhost:8002/docs`
+- Backend proxy endpoint: `POST http://localhost:3000/api/v1/ai/chatbot/chat`
+- Frontend page: `http://localhost:5173/ai-assistant`
 
 ---
 
