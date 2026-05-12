@@ -58,11 +58,12 @@ export function OrderSummary(props: OrderSummaryProps) {
       <div className="space-y-3">
         {items.map((item) => {
           const unitCents = parsePriceToCents(item.unitPrice)
+          const label = item.name ?? `Item #${item.menuItemId.slice(0, 6)}`
           return (
             <div key={item.id} className="flex justify-between text-sm">
               <div className="flex gap-2">
                 <span className="text-gray-500">×{item.quantity}</span>
-                <span className="text-gray-800">{item.name}</span>
+                <span className="text-gray-800">{label}</span>
               </div>
               <span className="font-medium text-gray-900">
                 {formatPrice(unitCents * item.quantity)}

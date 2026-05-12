@@ -5,6 +5,14 @@
 
 ---
 
+## 0. Ground Rules
+
+- **Do not modify files inside `ai/`, `backend/`, or `frontend/`.** Those folders are owned by other engineers working independently. All QA work lives under `qa/` (plus root-level CI config like `.github/workflows/qa.yml`).
+- Reading from those folders (for fixtures, type references, or schema inspection) is fine — only writes are off-limits.
+- If a bug is found in another track's code, file it as an issue or report it to that track's owner; do not patch it from here.
+
+---
+
 ## 1. QA Strategy Overview
 
 ### Testing Pyramid

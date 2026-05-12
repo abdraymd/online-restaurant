@@ -62,6 +62,9 @@ backend/
 │   ├── restaurants.test.ts
 │   ├── menu-items.test.ts
 │   └── orders.test.ts
+├── docker/
+│   ├── Dockerfile             # PostgreSQL image with seed data
+│   └── init.sql               # Schema + seed SQL executed on first container start
 ├── .env                       # Never commit — listed in .gitignore
 ├── .env.example               # Committed template with placeholder values
 ├── .gitignore
@@ -112,7 +115,6 @@ model User {
   updatedAt    DateTime @updatedAt
 
   orders       Order[]
-  restaurants  Restaurant[]
 
   @@index([email])
 }
@@ -125,15 +127,12 @@ model Restaurant {
   address     String
   phone       String?
   isOpen      Boolean  @default(true)
-  ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  owner       User       @relation(fields: [ownerId], references: [id])
   menuItems   MenuItem[]
   orders      Order[]
 
-  @@index([ownerId])
   @@index([isOpen])
 }
 
@@ -196,9 +195,9 @@ model OrderItem {
 ## 4. API Endpoints
 
 Base path: `/api/v1`  
-Protected routes require: `Authorization: Bearer <token>`
+**Public** routes need no token. **Protected** routes require `Authorization: Bearer <token>`.
 
-### Auth
+### Auth — Public
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -210,39 +209,41 @@ Protected routes require: `Authorization: Bearer <token>`
 **POST /auth/login** body: `{ email, password }`  
 Both return: `{ token, user: { id, name, email, role } }`
 
-### Restaurants
+### Restaurants — Public
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | /restaurants | No | List all restaurants (paginated, filterable) |
 | GET | /restaurants/:id | No | Single restaurant + menu preview |
-| POST | /restaurants | Yes (OWNER/ADMIN) | Create restaurant |
-| PATCH | /restaurants/:id | Yes (owner/ADMIN) | Update restaurant |
-| DELETE | /restaurants/:id | Yes (owner/ADMIN) | Delete restaurant |
+| POST | /restaurants | No | Create restaurant |
+| PATCH | /restaurants/:id | No | Update restaurant |
+| DELETE | /restaurants/:id | No | Delete restaurant |
 
 GET /restaurants query params: `search`, `isOpen`, `page` (default 1), `limit` (default 20, max 100)  
 Response shape: `{ data: [...], meta: { page, limit, total } }`
 
-### Menu Items
+### Menu Items — Public
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | /restaurants/:restaurantId/menu-items | No | List menu |
-| POST | /restaurants/:restaurantId/menu-items | Yes (owner/ADMIN) | Add item |
-| PATCH | /menu-items/:id | Yes (owner/ADMIN) | Update item |
-| DELETE | /menu-items/:id | Yes (owner/ADMIN) | Delete item |
+| POST | /restaurants/:restaurantId/menu-items | No | Add item |
+| PATCH | /menu-items/:id | No | Update item |
+| DELETE | /menu-items/:id | No | Delete item |
 
 Query params for GET: `category`, `isAvailable` (default true)
 
-### Orders
+### Orders — Protected
+
+All order endpoints require a valid JWT. `userId` is always taken from the token — never from the request body.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | /orders | Yes (CUSTOMER) | Place order |
-| GET | /orders | Yes | List orders (scoped by role) |
-| GET | /orders/:id | Yes | Order detail |
-| PATCH | /orders/:id/status | Yes (owner/ADMIN) | Update status |
-| DELETE | /orders/:id | Yes (CUSTOMER) | Cancel (PENDING only) |
+| POST | /orders | **Yes** | Place order |
+| GET | /orders | **Yes** | List orders (scoped to authenticated user) |
+| GET | /orders/:id | **Yes** | Order detail |
+| PATCH | /orders/:id/status | **Yes** | Update status |
+| DELETE | /orders/:id | **Yes** | Cancel (PENDING only) |
 
 **POST /orders** body:
 ```json
@@ -254,7 +255,7 @@ Query params for GET: `category`, `isAvailable` (default true)
 ```
 **Rules**: all menuItemIds must belong to restaurantId and be available; `totalPrice` computed server-side — never trust client prices.
 
-### Users (Admin only)
+### Users — Admin Only
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -329,22 +330,23 @@ Standard codes: `VALIDATION_ERROR`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `C
 ### Phase 7 — Orders Module
 30. `orders.service.ts`:
     - `placeOrder` — validate items belong to restaurant + are available, compute totalPrice, create Order + OrderItems in `$transaction`
-    - `list` — scope by role (CUSTOMER: own, OWNER: restaurant's, ADMIN: all)
-    - `findById` — same scoping
-    - `updateStatus` — enforce valid transitions
+    - `list` — scoped to `req.user.id`
+    - `findById` — verifies ownership via `req.user.id`
+    - `updateStatus` — same ownership check
     - `cancel` — only PENDING orders
-31. Controller + router, mount at `/api/v1/orders`
-32. Write `tests/orders.test.ts`
+31. Apply `requireAuth` to all order routes in `orders.router.ts`
+32. Controller + router, mount at `/api/v1/orders`
+33. Write `tests/orders.test.ts`
 
 ### Phase 8 — Users Module (Admin)
-33. `users.service.ts`, controller, router (all routes `requireRole('ADMIN')`)
-34. Mount at `/api/v1/users`
+34. `users.service.ts`, controller, router (all routes `requireRole('ADMIN')`)
+35. Mount at `/api/v1/users`
 
 ### Phase 9 — Hardening
-35. Wrap all async handlers (use `express-async-errors` package)
-36. Review all Zod schemas (required fields, min/max, price > 0, quantity >= 1)
-37. `npm test` — all green
-38. `npm run build` — zero TypeScript errors
+36. Wrap all async handlers (use `express-async-errors` package)
+37. Review all Zod schemas (required fields, min/max, price > 0, quantity >= 1)
+38. `npm test` — all green
+39. `npm run build` — zero TypeScript errors
 
 ---
 
@@ -380,6 +382,12 @@ Create `backend/.env.example` with the same keys but placeholder values — comm
 - PostgreSQL 16 (local or Docker)
 
 ### Start PostgreSQL via Docker (recommended)
+```bash
+docker build -t restaurant-pg ./docker
+docker run --name restaurant-pg -p 5432:5432 -d restaurant-pg
+```
+
+Or with plain postgres image (no seed data):
 ```bash
 docker run --name restaurant-pg \
   -e POSTGRES_USER=postgres \
@@ -420,6 +428,7 @@ npm run build && npm start
 |----------|--------|
 | Prisma over Sequelize/TypeORM | Best TypeScript experience; schema-as-code migrations are auditable |
 | JWT (not sessions) | Stateless; no Redis required for MVP |
+| Auth required for orders only | Restaurants and menu items are public read/write — only orders need an identity anchor |
 | DECIMAL for money | Float arithmetic causes cents rounding bugs |
 | `unitPrice` snapshot on OrderItem | Preserves historical totals when menu prices change |
 | Server-side total calculation | Prevents price manipulation from client |

@@ -88,7 +88,7 @@ export function OrderHistoryPage() {
                     <div className="mt-3 pt-3 border-t border-gray-100">
                       <p className="text-xs text-gray-500 line-clamp-1">
                         {order.items
-                          .map((item) => `${item.name} ×${item.quantity}`)
+                          .map((item) => `${item.name ?? `Item #${item.menuItemId.slice(0, 6)}`} ×${item.quantity}`)
                           .join(', ')}
                       </p>
                     </div>
