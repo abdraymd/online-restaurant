@@ -13,7 +13,7 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.QA_VIDEO === 'on' ? 'on' : 'retain-on-failure',
     actionTimeout: 10_000,
     navigationTimeout: 15_000,
   },
