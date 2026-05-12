@@ -83,6 +83,8 @@ def search_menu(query: str) -> str:
     context = current_context()
     params = {"query": query, "restaurantId": context.get("restaurantId")}
     response = requests.get(f"{BACKEND_API_URL}/menu-items", params=params, headers=backend_headers(), timeout=10)
+    if not response.ok:
+        return f"Error {response.status_code}: {response.text}"
     return response.text
 
 
@@ -93,6 +95,8 @@ def get_restaurant_info() -> str:
     if not restaurant_id:
         return "No restaurantId was provided."
     response = requests.get(f"{BACKEND_API_URL}/restaurants/{restaurant_id}", headers=backend_headers(), timeout=10)
+    if not response.ok:
+        return f"Error {response.status_code}: {response.text}"
     return response.text
 
 
@@ -118,15 +122,19 @@ def place_order(deliveryAddress: str) -> str:
     session = context["session"]
     if not session["cart"]:
         return "Cart is empty."
+    note_parts = [f"Delivery: {deliveryAddress}"]
+    for item in session["cart"]:
+        if item.get("notes"):
+            note_parts.append(f"{item.get('name') or item['menuItemId']}: {item['notes']}")
     payload = {
         "restaurantId": context.get("restaurantId"),
-        "userId": context.get("userId"),
-        "deliveryAddress": deliveryAddress,
-        "items": [{"menuItemId": item["menuItemId"], "quantity": item["quantity"], "notes": item.get("notes")} for item in session["cart"]],
+        "items": [{"menuItemId": item["menuItemId"], "quantity": item["quantity"]} for item in session["cart"]],
+        "note": ". ".join(note_parts),
     }
     response = requests.post(f"{BACKEND_API_URL}/orders", json=payload, headers=backend_headers(), timeout=15)
-    if response.ok:
-        session["cart"] = []
+    if not response.ok:
+        return f"Error {response.status_code}: {response.text}"
+    session["cart"] = []
     return response.text
 
 
