@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, LogOut, User } from 'lucide-react'
+import { Bot, ShoppingCart, LogOut, User } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useCartStore } from '@/store/cartStore'
 import { CartDrawer } from '@/components/cart/CartDrawer'
@@ -36,6 +36,14 @@ export function Navbar() {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
+              <Link
+                to="/ai-assistant"
+                className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-orange-500 transition-colors"
+              >
+                <Bot className="w-4 h-4" />
+                AI Assistant
+              </Link>
+
               {/* Cart button */}
               <button
                 onClick={() => setCartOpen(true)}

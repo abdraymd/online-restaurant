@@ -3,7 +3,7 @@ import time
 from typing import Any, Literal
 
 import requests
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException
 from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 from langchain_classic.memory import ConversationSummaryBufferMemory
@@ -12,12 +12,23 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-load_dotenv()
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+SERVICE_DIR = os.path.dirname(__file__)
+SHARED_ENV = dotenv_values(os.path.join(SERVICE_DIR, "..", ".env"))
+SERVICE_ENV = dotenv_values(os.path.join(SERVICE_DIR, ".env"))
+load_dotenv(os.path.join(SERVICE_DIR, "..", ".env"))
+load_dotenv(os.path.join(SERVICE_DIR, ".env"))
 
-SERVICE_KEY = os.getenv("SERVICE_KEY", "")
-BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:3000/api/v1").rstrip("/")
-OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o")
+
+def env_value(name: str, default: str = "") -> str:
+    service_value = str(SERVICE_ENV.get(name) or "")
+    shared_value = str(SHARED_ENV.get(name) or "")
+    if service_value and not service_value.startswith(("sk-your", "replace_with")):
+        return service_value
+    return shared_value or os.getenv(name, default)
+
+SERVICE_KEY = env_value("SERVICE_KEY")
+BACKEND_API_URL = env_value("BACKEND_API_URL", "http://localhost:3000/api/v1").rstrip("/")
+OPENAI_CHAT_MODEL = env_value("OPENAI_CHAT_MODEL", "gpt-4o")
 SESSION_TTL_SECONDS = 30 * 60
 
 app = FastAPI(title="Online Restaurant AI Chatbot", version="1.0.0")
@@ -142,7 +153,7 @@ def place_order(deliveryAddress: str) -> str:
     return response.text
 
 
-llm = ChatOpenAI(model=OPENAI_CHAT_MODEL, temperature=0)
+llm = ChatOpenAI(model=OPENAI_CHAT_MODEL, temperature=0, api_key=env_value("OPENAI_API_KEY"))
 tools = [search_menu, get_restaurant_info, add_to_cart, view_cart, place_order]
 prompt = ChatPromptTemplate.from_messages(
     [

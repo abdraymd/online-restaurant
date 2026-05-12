@@ -9,6 +9,7 @@ import { OrderConfirmationPage } from '@/pages/OrderConfirmationPage'
 import { OrderHistoryPage } from '@/pages/OrderHistoryPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { AiAssistantPage } from '@/pages/AiAssistantPage'
 
 function MainLayout() {
   return (
@@ -45,6 +46,7 @@ export function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders/confirmation/:id" element={<OrderConfirmationPage />} />
           <Route path="/orders" element={<OrderHistoryPage />} />
+          <Route path="/ai-assistant" element={<AiAssistantPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>
