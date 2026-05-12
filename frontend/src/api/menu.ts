@@ -10,7 +10,7 @@ export async function getMenuItems(
   params?: MenuParams
 ): Promise<MenuItem[]> {
   const response = await apiClient.get<MenuItem[]>(
-    `/restaurants/${restaurantId}/menu`,
+    `/restaurants/${restaurantId}/menu-items`,
     { params }
   )
   return response.data

@@ -13,6 +13,7 @@ export interface Restaurant {
   address: string
   phone?: string
   isOpen: boolean
+  menuItems?: MenuItem[]
 }
 
 export interface MenuItem {
@@ -29,7 +30,7 @@ export interface MenuItem {
 export interface OrderItem {
   id: string
   menuItemId: string
-  name: string
+  name?: string
   quantity: number
   unitPrice: string
 }
