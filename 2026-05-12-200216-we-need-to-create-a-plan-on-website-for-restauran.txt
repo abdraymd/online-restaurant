@@ -1,0 +1,2220 @@
+╭─── Claude Code v2.1.139 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                 Welcome back Arman!                │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ Added agent view (Rese… │
+│  Sonnet 4.6 · Claude Pro · armann@orlanda.info's   │ Added `/goal` command:… │
+│  Organization                                      │ Added `/scroll-speed` … │
+│ C:\Users\User\Desktop\arman-personal-dev\n-factor… │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+> We need to create a plan on website for restaurants. Service for choosing     
+  restaurants and food inside the restaruants. Platform has a list of           
+  restaurants and a user can make an order in each of them. We have 4 people    
+  whose roles are: Back-end Engineer, AI Engineer, Front End Engineer, Q&A      
+  Engineer. We all going to be separately vibecoding the platform therefore we  
+  need a separate plan. 4 md files. Each should hav separate folder with their  
+  work. Basically each of us should have instructions to work on. Use Backend,  
+  AI, Front End, Q&A agents to make a plan.                                     
+
+● I'll start by exploring the existing codebase, then launch all 4 specialized
+  agents in parallel to draft each role's plan.
+
+● Explore(Explore existing codebase structure)
+  ⎿  Done (7 tool uses · 105.5k tokens · 23s)
+  (ctrl+o to expand)
+
+● Fresh repo — blank canvas. Now I'll launch all 4 role-specific agents in
+  parallel to design each team member's plan.
+
+● 4 agents finished (ctrl+o to expand)
+   ├ Backend Architect (Backend Engineer plan for restaurant platform) · 3 tool uses · 17.8k tokens
+   │ ⎿  Done
+   ├ AI Engineer (AI Engineer plan for restaurant platform) · 5 tool uses · 17.6k tokens
+   │ ⎿  Done
+   ├ Frontend Developer (Frontend Engineer plan for restaurant platform) · 3 tool uses · 17.9k tokens
+   │ ⎿  Done
+   └ API Tester (QA Engineer plan for restaurant platform) · 3 tool uses · 18.5k tokens
+     ⎿  Done
+
+● All 4 agents have returned comprehensive plans. Now I'll write the master plan
+   file and then exit plan mode.
+
+● Updated plan
+  ⎿  /plan to preview
+
+● User approved Claude's plan
+  ⎿  Plan saved to: ~\.claude\plans\we-need-to-create-quiet-gizmo.md · /plan to 
+     edit
+     Online Restaurant Platform — Master Plan
+
+     Context
+
+     Building an online restaurant ordering platform from scratch. Users can
+     browse a list of restaurants, view menus, and place orders. Four engineers
+     are vibecoding independently in separate folders. Each folder gets its own
+     PLAN.md with role-specific instructions.
+
+     ---
+     Repository Structure
+
+     online-restaurant/
+     ├── backend/      ← Back-end Engineer
+     │   └── PLAN.md
+     ├── frontend/     ← Front-end Engineer
+     │   └── PLAN.md
+     ├── ai/           ← AI Engineer
+     │   └── PLAN.md
+     └── qa/           ← Q&A Engineer
+         └── PLAN.md
+
+     ---
+     Files to Create
+
+     ┌──────────────────┬────────────────────┐
+     │       File       │       Owner        │
+     ├──────────────────┼────────────────────┤
+     │ backend/PLAN.md  │ Back-end Engineer  │
+     ├──────────────────┼────────────────────┤
+     │ frontend/PLAN.md │ Front-end Engineer │
+     ├──────────────────┼────────────────────┤
+     │ ai/PLAN.md       │ AI Engineer        │
+     ├──────────────────┼────────────────────┤
+     │ qa/PLAN.md       │ Q&A Engineer       │
+     └──────────────────┴────────────────────┘
+
+     ---
+     Per-Role Summary
+
+     Backend (backend/) — Node.js + Express + TypeScript + PostgreSQL + Prisma
+
+     - Auth: JWT + bcrypt, roles: CUSTOMER / RESTAURANT_OWNER / ADMIN
+     - Models: User, Restaurant, MenuItem, Order, OrderItem (with price
+     snapshot)
+     - API (base /api/v1): /auth, /restaurants, /menu-items, /orders, /users
+     - Port: 3000
+     - Key rule: totalPrice computed server-side; money stored as DECIMAL(10,2)
+     - Implementation phases: scaffold → DB/Prisma → middleware → auth →
+     restaurants → menu-items → orders → users → hardening
+     - Env vars: DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN, CORS_ORIGIN, PORT
+
+     Frontend (frontend/) — React 18 + Vite + TypeScript + Tailwind + shadcn/ui
+
+     - State: Zustand (cart + auth, persisted to localStorage) + TanStack Query
+     (server data)
+     - 7 pages: Home, Restaurant Detail, Checkout, Order Confirmation, Order
+     History, Login, 404
+     - 15 components: RestaurantCard, RestaurantGrid, SearchBar, MenuItemCard,
+     MenuItemModal, CategoryFilter, CartDrawer, CartItem, OrderSummary,
+     OrderStatusBadge, CheckoutForm, Navbar, Footer, AuthGuard, LoadingSpinner
+     - API layer: Axios instance in src/api/client.ts with auth interceptor; all
+      fetchers typed
+     - Cart rule: single-restaurant enforcement; prices stored in cents
+     - Env vars: VITE_API_BASE_URL, VITE_AI_API_BASE_URL
+
+     AI (ai/) — Python + FastAPI microservices
+
+     - 5 features:
+       a. Semantic Search (port 8001) — text-embedding-3-small + Chroma vector
+     DB
+       b. Chatbot Ordering Assistant (port 8002) — GPT-4o + function calling
+       c. Review Sentiment Analysis (port 8003) — GPT-4o-mini classifier
+       d. Smart Upsell Engine (port 8004) — co-occurrence matrix from orders
+       e. Personalized Recommendations (port 8005) — ALS collaborative filtering
+      (implicit lib)
+     - Build order: Search → Chatbot → Sentiment → Upsell → Recommendations
+     (data-hungry features last)
+     - Integration: backend proxies calls to AI services via X-Service-Key
+     header
+     - Env vars: OPENAI_API_KEY, CHROMA_PATH, SERVICE_KEY, BACKEND_API_URL
+
+     QA (qa/) — Jest + Vitest + Playwright + Newman + k6 + OWASP ZAP
+
+     - Testing pyramid: unit → integration → API contract (Newman) → E2E
+     (Playwright) → performance (k6) → security (ZAP)
+     - Critical test IDs: AUTH-01–12, REST-01–10, MENU-01–07, ORD-01–13,
+     AI-01–07, REC-01–06
+     - Quality gates: 80%+ coverage, 0 Newman failures, 0 Playwright failures
+     (Chrome + Firefox), p95 < 200 ms, 0 ZAP HIGH alerts
+     - CI: GitHub Actions workflow at .github/workflows/qa.yml — jobs run in
+     parallel where possible
+     - Implementation order: scaffold → unit (backend) → unit (frontend) →
+     integration → Newman → Playwright → k6 → ZAP → CI wiring
+
+     ---
+     Verification
+
+     After implementation, end-to-end test:
+     1. Start Postgres + backend (npm run dev in backend/)
+     2. Start AI services (uvicorn main:app --reload in each ai/service-*/)
+     3. Start frontend (npm run dev in frontend/)
+     4. Browse to http://localhost:5173, register a user, browse restaurants,
+     add items, place order
+     5. From qa/: run npm run test:all — all suites green
+
+● Now I'll create all 4 folders and write the PLAN.md files. Doing them in
+  parallel.
+
+● Bash(mkdir -p "C:\Users\User\Desktop\arman-personal-dev\n-factorial\online-res
+      taurant\backend"
+      "C:\Users\User\Desktop\arman-personal-dev\n-factorial\online-restauran…)
+  ⎿  Done
+
+● Write(backend\PLAN.md)
+  ⎿  Wrote 426 lines to backend\PLAN.md
+       2 # Backend Plan — Online Restaurant Ordering Platform
+       3 ## 1. Tech Stack
+       4 
+       5 | Concern | Choice | Rationale |
+       6 |---------|--------|-----------|
+       8 | Framework | Express 4 | Minimal, easy middleware |ast I/O |
+       9 | Database | PostgreSQL 16 | Relational integrity, ACID transact
+         ions for orders |
+      10 | ORM | Prisma 5 | Type-safe queries, auto-migrations, clean sch
+         ema DSL |
+     … +465 lines (ctrl+o to expand)
+
+● Write(frontend\PLAN.md)
+  ⎿  Error writing file
+
+● Write(ai\PLAN.md)
+  ⎿  Error writing file
+
+● Write(qa\PLAN.md)
+  ⎿  Wrote 577 lines to qa\PLAN.md
+       1 # QA Engineering Plan — Online Restaurant Ordering Platform
+       2 
+       3 **Author**: Q&A Engineer (solo, AI-assisted / vibecoding)  
+       4 **Scope**: REST API + React frontend + AI microservices
+       5 
+       6 ---
+       7 
+       8 ## 1. QA Strategy Overview
+       9 
+      10 ### Testing Pyramid
+     … +645 lines (ctrl+o to expand)
+
+● The AI and frontend agents already wrote those files — I need to read them
+  before overwriting. Let me do that now.
+
+  Read 2 files (ctrl+o to expand)
+
+● Both exist with content from the subagents. Now I'll overwrite them with the
+  full detailed plans.
+
+● Write(frontend\PLAN.md)
+  ⎿  Added 224 lines, removed 325 lines
+       1  # Frontend Plan — Online Restaurant Ordering Platform
+       2  
+       3 -> **Role**: Front-end Engineer (solo, AI-assisted)             
+       4 -> **Workspace**: `frontend/` folder inside the monorepo        
+       5 -> **Backend base URL**: `http://localhost:3000` (REST API)     
+       6 -> **Target**: Modern, mobile-first UI                          
+       7 -                                                               
+       8 ----                                                            
+       9 -                                                               
+       3  ## 1. Tech Stack
+       4  
+      12 -| Concern | Choice | Reason |                                  
+      13 -|---|---|---|                                                  
+      14 -| Framework | **React 18** (Vite) | Fast HMR, huge ecosystem, C
+         -oncurrent features |                                           
+      15 -| Language | **TypeScript** | Type safety, better DX while vibe
+         -coding |                                                       
+      16 -| Styling | **Tailwind CSS v3** | Utility-first, responsive bre
+         -akpoints built in |                                            
+      17 -| UI primitives | **shadcn/ui** | Accessible headless component
+         -s, copy-paste, zero runtime bloat |                            
+      18 -| Routing | **React Router v6** | File-like nested routes, data
+         - loaders |                                                     
+      19 -| Global state | **Zustand** | Minimal boilerplate, perfect for
+         - cart + auth |                                                 
+      20 -| Server state | **TanStack Query v5** | Caching, loading/error
+         - states, refetch on focus |                                    
+      21 -| Forms | **React Hook Form + Zod** | Type-safe validation, unc
+         -ontrolled performance |                                        
+      22 -| Icons | **lucide-react** | Consistent icon set, tree-shakeabl
+         -e |                                                            
+      23 -| HTTP client | **Axios** | Interceptors for auth headers, base
+         - URL config |                                                  
+      24 -| Testing | **Vitest + React Testing Library** | Co-located wit
+         -h Vite, fast |                                                 
+      25 -| Linting | **ESLint + Prettier** | Consistent style |         
+       5 +| Concern | Choice | Rationale |                               
+       6 +|---------|--------|-----------|                               
+       7 +| Framework | React 18 + Vite + TypeScript | Fast DX, strict ty
+         +pes prevent runtime bugs |                                     
+       8 +| Styling | Tailwind CSS v3 | Utility-first, no context-switchi
+         +ng to CSS files |                                              
+       9 +| Components | shadcn/ui | Copy-paste accessible primitives you
+         + own outright |                                                
+      10 +| State (client) | Zustand | Zero-boilerplate store; persisted 
+         +to localStorage |                                              
+      11 +| State (server) | TanStack Query v5 | Caching, loading/error s
+         +tates, background refetch |                                    
+      12 +| Routing | React Router v6 | Standard, nested routes, protecte
+         +d route pattern |                                              
+      13 +| HTTP | Axios | Interceptors for auth token injection + 401 ha
+         +ndling |                                                       
+      14 +| Forms | React Hook Form + Zod | Performant, schema-validated 
+         +forms |                                                        
+      15 +| Icons | lucide-react | Tree-shakeable, consistent icon set | 
+      16  
+      17  ---
+      18  
+     ...
+       21  ```
+       22  frontend/
+       23  ├── public/
+       34 -│   └── favicon.svg                                           
+       24 +│   └── favicon.ico                                           
+       25  ├── src/
+       36 -│   ├── api/                    # Axios instance + per-resourc
+          -e fetchers                                                    
+       37 -│   │   ├── client.ts           # Axios base instance         
+       38 -│   │   ├── restaurants.ts                                    
+       39 -│   │   ├── menus.ts                                          
+       40 -│   │   └── orders.ts                                         
+       26 +│   ├── main.tsx               # App bootstrap                
+       27 +│   ├── App.tsx                # Router setup                 
+       28 +│   ├── api/                                                  
+       29 +│   │   ├── client.ts          # Axios instance with auth inte
+          +rceptor                                                       
+       30 +│   │   ├── restaurants.ts     # Typed fetchers for restaurant
+          + endpoints                                                    
+       31 +│   │   ├── menu.ts            # Typed fetchers for menu endpo
+          +ints                                                          
+       32 +│   │   ├── orders.ts          # Typed fetchers for order endp
+          +oints                                                         
+       33 +│   │   └── auth.ts            # Typed fetchers for auth endpo
+          +ints                                                          
+       34  │   ├── components/
+       42 -│   │   ├── ui/                 # shadcn primitives (Button, C
+          -ard, Badge …)                                                 
+       43 -│   │   ├── layout/                                           
+       44 -│   │   │   ├── Navbar.tsx                                    
+       45 -│   │   │   ├── Footer.tsx                                    
+       46 -│   │   │   └── PageWrapper.tsx                               
+       35  │   │   ├── restaurant/
+       36  │   │   │   ├── RestaurantCard.tsx
+       37  │   │   │   ├── RestaurantGrid.tsx
+       50 -│   │   │   └── RestaurantHero.tsx                            
+       38 +│   │   │   └── CategoryFilter.tsx                            
+       39  │   │   ├── menu/
+       52 -│   │   │   ├── MenuSection.tsx                               
+       40  │   │   │   ├── MenuItemCard.tsx
+       41  │   │   │   └── MenuItemModal.tsx
+       42  │   │   ├── cart/
+       43  │   │   │   ├── CartDrawer.tsx
+       57 -│   │   │   ├── CartItem.tsx                                  
+       58 -│   │   │   └── CartSummary.tsx                               
+       59 -│   │   └── order/                                            
+       60 -│   │       ├── OrderCard.tsx                                 
+       61 -│   │       └── OrderStatusBadge.tsx                          
+       44 +│   │   │   └── CartItem.tsx                                  
+       45 +│   │   ├── order/                                            
+       46 +│   │   │   ├── OrderSummary.tsx                              
+       47 +│   │   │   └── OrderStatusBadge.tsx                          
+       48 +│   │   └── shared/                                           
+       49 +│   │       ├── Navbar.tsx                                    
+       50 +│   │       ├── Footer.tsx                                    
+       51 +│   │       ├── SearchBar.tsx                                 
+       52 +│   │       ├── AuthGuard.tsx                                 
+       53 +│   │       └── LoadingSpinner.tsx                            
+       54  │   ├── hooks/
+       63 -│   │   ├── useRestaurants.ts                                 
+       64 -│   │   ├── useMenu.ts                                        
+       65 -│   │   ├── useOrders.ts                                      
+       66 -│   │   └── useCart.ts          # thin wrapper over Zustand ca
+          -rt store                                                      
+       55 +│   │   ├── useCart.ts          # Cart store selectors + actio
+          +ns                                                            
+       56 +│   │   ├── useAuth.ts          # Auth store selectors + actio
+          +ns                                                            
+       57 +│   │   ├── useRestaurants.ts   # TanStack Query hooks for res
+          +taurants                                                      
+       58 +│   │   ├── useMenu.ts          # TanStack Query hooks for men
+          +u items                                                       
+       59 +│   │   └── useOrders.ts        # TanStack Query hooks for ord
+          +ers                                                           
+       60  │   ├── pages/
+       68 -│   │   ├── Home.tsx                                          
+       69 -│   │   ├── RestaurantDetail.tsx                              
+       70 -│   │   ├── Checkout.tsx                                      
+       71 -│   │   ├── OrderConfirmation.tsx                             
+       72 -│   │   ├── OrderHistory.tsx                                  
+       73 -│   │   ├── Login.tsx                                         
+       74 -│   │   └── NotFound.tsx                                      
+       61 +│   │   ├── HomePage.tsx                                      
+       62 +│   │   ├── RestaurantPage.tsx                                
+       63 +│   │   ├── CheckoutPage.tsx                                  
+       64 +│   │   ├── OrderConfirmationPage.tsx                         
+       65 +│   │   ├── OrderHistoryPage.tsx                              
+       66 +│   │   ├── LoginPage.tsx                                     
+       67 +│   │   └── NotFoundPage.tsx                                  
+       68  │   ├── store/
+       76 -│   │   ├── cartStore.ts        # Zustand cart slice          
+       77 -│   │   └── authStore.ts        # Zustand auth slice          
+       69 +│   │   ├── cartStore.ts        # Zustand cart store (persiste
+          +d)                                                            
+       70 +│   │   └── authStore.ts        # Zustand auth store (persiste
+          +d)                                                            
+       71  │   ├── types/
+       79 -│   │   ├── restaurant.ts                                     
+       80 -│   │   ├── menu.ts                                           
+       81 -│   │   └── order.ts                                          
+       82 -│   ├── lib/                                                  
+       83 -│   │   └── utils.ts            # cn() helper, formatPrice, fo
+          -rmatDate                                                      
+       84 -│   ├── App.tsx                 # Router tree                 
+       85 -│   ├── main.tsx                                              
+       86 -│   └── index.css               # Tailwind directives         
+       72 +│   │   └── index.ts            # Shared TypeScript interfaces
+       73 +│   └── lib/                                                  
+       74 +│       └── utils.ts            # cn() helper, price formatter
+          +s, etc.                                                       
+       75 +├── .env.local                  # Never commit                
+       76 +├── .env.example                # Committed template          
+       77  ├── index.html
+       78  ├── vite.config.ts
+       79  ├── tailwind.config.ts
+       80  ├── tsconfig.json
+       91 -├── .env.example                                              
+       92 -└── package.json                                              
+       81 +├── package.json                                              
+       82 +└── PLAN.md                                                   
+       83  ```
+       84  
+       85  ---
+       86  
+       87  ## 3. Pages / Routes
+       88  
+       99 -| Route | Page component | Purpose |                          
+      100 -|---|---|---|                                                 
+      101 -| `/` | `Home.tsx` | Browse all restaurants — search bar, cate
+          -gory filters, restaurant grid |                               
+      102 -| `/restaurants/:id` | `RestaurantDetail.tsx` | Restaurant inf
+          -o, full menu grouped by section, add-to-cart |                
+      103 -| `/checkout` | `Checkout.tsx` | Review cart, enter delivery a
+          -ddress & payment, place order |                               
+      104 -| `/orders/:orderId/confirmation` | `OrderConfirmation.tsx` | 
+          -Success screen with order summary and estimated time |        
+      105 -| `/orders` | `OrderHistory.tsx` | List of past orders (requir
+          -es auth) |                                                    
+      106 -| `/login` | `Login.tsx` | Email + password login; redirects b
+          -ack after auth |                                              
+      107 -| `*` | `NotFound.tsx` | 404 fallback |                       
+       89 +| Route | Component | Auth Required | Purpose |               
+       90 +|-------|-----------|---------------|---------|               
+       91 +| `/` | HomePage | No | Browse + search restaurants |         
+       92 +| `/restaurants/:id` | RestaurantPage | No | Restaurant detail
+          + + menu |                                                     
+       93 +| `/checkout` | CheckoutPage | Yes | Review cart + place order
+          + |                                                            
+       94 +| `/orders/confirmation/:id` | OrderConfirmationPage | Yes | P
+          +ost-order success screen |                                    
+       95 +| `/orders` | OrderHistoryPage | Yes | User's past orders |   
+       96 +| `/login` | LoginPage | No | Login + register tabs |         
+       97 +| `*` | NotFoundPage | No | 404 fallback |                    
+       98  
+      109 -### Route tree in `App.tsx`                                   
+       99 +Protected routes (`/checkout`, `/orders/*`) use `<AuthGuard>` 
+          +which redirects to `/login?redirect=<current-path>` and bounce
+          +s back after login.                                           
+      100  
+      111 -```tsx                                                        
+      112 -<Routes>                                                      
+      113 -  <Route path="/" element={<PageWrapper />}>                  
+      114 -    <Route index element={<Home />} />                        
+      115 -    <Route path="restaurants/:id" element={<RestaurantDetail /
+          ->} />                                                         
+      116 -    <Route path="checkout" element={<ProtectedRoute><Checkout 
+          -/></ProtectedRoute>} />                                       
+      117 -    <Route path="orders/:orderId/confirmation" element={<Prote
+          -ctedRoute><OrderConfirmation /></ProtectedRoute>} />          
+      118 -    <Route path="orders" element={<ProtectedRoute><OrderHistor
+          -y /></ProtectedRoute>} />                                     
+      119 -    <Route path="login" element={<Login />} />                
+      120 -    <Route path="*" element={<NotFound />} />                 
+      121 -  </Route>                                                    
+      122 -</Routes>                                                     
+      123 -```                                                           
+      124 -                                                              
+      125 -`PageWrapper` renders `<Navbar />`, `<Outlet />`, `<Footer />`
+          -.                                                             
+      126 -`ProtectedRoute` reads `authStore`; redirects to `/login` if u
+          -nauthenticated.                                               
+      127 -                                                              
+      101  ---
+      102  
+      103  ## 4. Key Components
+      104  
+      132 -### Layout                                                    
+      105 +| Component | Responsibility |                                
+      106 +|-----------|----------------|                                
+      107 +| `RestaurantCard` | Displays restaurant name, cuisine, rating
+          +, open/closed badge; navigates to detail on click |           
+      108 +| `RestaurantGrid` | Renders a responsive grid of RestaurantCa
+          +rds; shows skeleton loaders during fetch |                    
+      109 +| `SearchBar` | Debounced input (300 ms); updates URL query pa
+          +ram `?search=`; no prop drilling |                            
+      110 +| `CategoryFilter` | Horizontal scrollable chip list for menu 
+          +categories; highlights active category |                      
+      111 +| `MenuItemCard` | Shows item name, price, description, image;
+          + "Add to Cart" button opens MenuItemModal |                   
+      112 +| `MenuItemModal` | shadcn Dialog; quantity selector; calls `c
+          +artStore.addItem()`; closes on confirm |                      
+      113 +| `CartDrawer` | shadcn Sheet slide-over; lists CartItems; sho
+          +ws subtotal; "Checkout" CTA; accessible |                     
+      114 +| `CartItem` | Single cart row; quantity stepper; remove butto
+          +n |                                                           
+      115 +| `OrderSummary` | Read-only order breakdown with itemized pri
+          +ces and total |                                               
+      116 +| `OrderStatusBadge` | Color-coded badge (PENDING=yellow, CONF
+          +IRMED=blue, DELIVERED=green, CANCELLED=red) |                 
+      117 +| `CheckoutForm` | React Hook Form; delivery address fields; p
+          +ayment method selector (mock); submit |                       
+      118 +| `Navbar` | Logo, search bar (on home), cart icon with badge 
+          +count, user menu / login link |                               
+      119 +| `Footer` | Static footer with links |                       
+      120 +| `AuthGuard` | Wrapper that checks `authStore.token`; redirec
+          +ts if missing |                                               
+      121 +| `LoadingSpinner` | Centered animated spinner; used by TanSta
+          +ck Query loading states |                                     
+      122  
+      134 -| Component | Renders |                                       
+      135 -|---|---|                                                     
+      136 -| `Navbar` | Logo, search input (debounced), cart icon with it
+          -em-count badge, user avatar / login link |                    
+      137 -| `Footer` | Brand copy, links |                              
+      138 -| `PageWrapper` | Navbar + `<Outlet />` + Footer; sets max-wid
+          -th container |                                                
+      139 -                                                              
+      140 -### Restaurant                                                
+      141 -                                                              
+      142 -| Component | Renders |                                       
+      143 -|---|---|                                                     
+      144 -| `RestaurantCard` | Thumbnail image, name, cuisine tags, rati
+          -ng star, delivery time, minimum order — links to detail page |
+      145 -| `RestaurantGrid` | Responsive CSS grid of `RestaurantCard`s;
+          - shows skeleton loaders while fetching |                      
+      146 -| `RestaurantHero` | Banner image, name, rating, open/closed b
+          -adge at top of detail page |                                  
+      147 -                                                              
+      148 -### Menu                                                      
+      149 -                                                              
+      150 -| Component | Renders |                                       
+      151 -|---|---|                                                     
+      152 -| `MenuSection` | Section title (e.g. "Burgers") + list of `Me
+          -nuItemCard` |                                                 
+      153 -| `MenuItemCard` | Item image, name, description (truncated), 
+          -price, "+ Add" button |                                       
+      154 -| `MenuItemModal` | Full item detail in a dialog — photo, desc
+          -ription, quantity selector, special instructions textarea, "Ad
+          -d to cart" CTA |                                              
+      155 -                                                              
+      156 -### Cart                                                      
+      157 -                                                              
+      158 -| Component | Renders |                                       
+      159 -|---|---|                                                     
+      160 -| `CartDrawer` | Right-side slide-over panel listing cart item
+          -s, subtotal, "Go to checkout" button |                        
+      161 -| `CartItem` | Item name, unit price, quantity stepper (−/+), 
+          -remove button |                                               
+      162 -| `CartSummary` | Subtotal, delivery fee, total — used on both
+          - CartDrawer and Checkout page |                               
+      163 -                                                              
+      164 -### Order                                                     
+      165 -                                                              
+      166 -| Component | Renders |                                       
+      167 -|---|---|                                                     
+      168 -| `OrderCard` | Order date, restaurant name, item count, total
+          -, status badge — used on OrderHistory |                       
+      169 -| `OrderStatusBadge` | Colored pill: Pending / Confirmed / Pre
+          -paring / Out for delivery / Delivered / Cancelled |           
+      170 -                                                              
+      123  ---
+      124  
+      125  ## 5. State Management
+      126  
+      175 -### Global state — Zustand                                    
+      127 +### Zustand Cart Store (`store/cartStore.ts`)                 
+      128  
+      177 -#### `cartStore.ts`                                           
+      129  ```ts
+      130  interface CartState {
+      180 -  restaurantId: string | null;                                
+      181 -  items: CartItem[];           // { menuItemId, name, price, q
+          -uantity, note }                                               
+      182 -  addItem: (item) => void;     // clears cart if different res
+          -taurantId                                                     
+      183 -  removeItem: (menuItemId) => void;                           
+      184 -  updateQuantity: (menuItemId, qty) => void;                  
+      185 -  clearCart: () => void;                                      
+      186 -  total: () => number;         // computed getter             
+      131 +  restaurantId: string | null                                 
+      132 +  items: CartItem[]             // { menuItemId, name, price (
+          +cents), quantity }                                            
+      133 +  addItem: (item) => void       // warns if adding from a diff
+          +erent restaurant                                              
+      134 +  removeItem: (menuItemId) => void                            
+      135 +  updateQuantity: (menuItemId, quantity) => void              
+      136 +  clearCart: () => void                                       
+      137 +  totalCents: () => number      // derived                    
+      138 +  itemCount: () => number       // derived                    
+      139  }
+      140  ```
+      189 -Persisted to `localStorage` via `zustand/middleware persist` s
+          -o the cart survives a refresh.                                
+      141  
+      191 -#### `authStore.ts`                                           
+      142 +- Persisted to `localStorage` via Zustand persist middleware —
+          + cart survives page refresh                                   
+      143 +- Prices stored as **integers in cents** to avoid floating-poi
+          +nt rounding bugs                                              
+      144 +- Adding an item from a different restaurant triggers a confir
+          +mation dialog before clearing the existing cart               
+      145 +                                                              
+      146 +### Zustand Auth Store (`store/authStore.ts`)                 
+      147 +                                                              
+      148  ```ts
+      149  interface AuthState {
+      194 -  token: string | null;                                       
+      195 -  user: { id: string; name: string; email: string } | null;   
+      196 -  login: (token, user) => void;                               
+      197 -  logout: () => void;                                         
+      198 -  isAuthenticated: () => boolean;                             
+      150 +  token: string | null                                        
+      151 +  user: { id, name, email, role } | null                      
+      152 +  setAuth: (token, user) => void                              
+      153 +  clearAuth: () => void                                       
+      154  }
+      155  ```
+      201 -Also persisted to `localStorage`.                             
+      156  
+      203 -### Server state — TanStack Query                             
+      157 +- Persisted to `localStorage` — user stays logged in across se
+          +ssions                                                        
+      158 +- `clearAuth()` is called automatically by the Axios 401 respo
+          +nse interceptor                                               
+      159  
+      205 -All remote data (restaurant lists, menus, order history) lives
+          - in React Query cache. Keys:                                  
+      206 -                                                              
+      207 -| Query key | Data |                                          
+      208 -|---|---|                                                     
+      209 -| `['restaurants']` | List of all restaurants |               
+      210 -| `['restaurant', id]` | Single restaurant detail |           
+      211 -| `['menu', restaurantId]` | Menu sections + items |          
+      212 -| `['orders']` | Current user's order history |               
+      213 -| `['order', orderId]` | Single order detail |                
+      214 -                                                              
+      215 -Mutations (place order) use `useMutation` and invalidate `['or
+          -ders']` on success.                                           
+      216 -                                                              
+      160  ---
+      161  
+      162  ## 6. API Integration
+      163  
+      221 -### Axios client — `src/api/client.ts`                        
+      164 +### Axios Instance (`src/api/client.ts`)                      
+      165  
+      166  ```ts
+      224 -import axios from 'axios';                                    
+      225 -import { useAuthStore } from '../store/authStore';            
+      226 -                                                              
+      167  const client = axios.create({
+      228 -  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localh
+          -ost:3000',                                                    
+      229 -  headers: { 'Content-Type': 'application/json' },            
+      230 -});                                                           
+      168 +  baseURL: import.meta.env.VITE_API_BASE_URL,  // http://local
+          +host:3000/api/v1                                              
+      169 +})                                                            
+      170  
+      232 -// Attach JWT on every request                                
+      171 +// Request interceptor: attach Bearer token from authStore    
+      172  client.interceptors.request.use((config) => {
+      234 -  const token = useAuthStore.getState().token;                
+      235 -  if (token) config.headers.Authorization = `Bearer ${token}`;
+      236 -  return config;                                              
+      237 -});                                                           
+      173 +  const token = useAuthStore.getState().token                 
+      174 +  if (token) config.headers.Authorization = `Bearer ${token}` 
+      175 +  return config                                               
+      176 +})                                                            
+      177  
+      239 -// Auto-logout on 401                                         
+      178 +// Response interceptor: auto-logout on 401                   
+      179  client.interceptors.response.use(
+      180    (res) => res,
+      242 -  (err) => {                                                  
+      243 -    if (err.response?.status === 401) useAuthStore.getState().
+          -logout();                                                     
+      244 -    return Promise.reject(err);                               
+      181 +  (error) => {                                                
+      182 +    if (error.response?.status === 401) {                     
+      183 +      useAuthStore.getState().clearAuth()                     
+      184 +      window.location.href = '/login'                         
+      185 +    }                                                         
+      186 +    return Promise.reject(error)                              
+      187    }
+      246 -);                                                            
+      247 -                                                              
+      248 -export default client;                                        
+      188 +)                                                             
+      189  ```
+      190  
+      251 -### `.env.example`                                            
+      191 +### Typed Fetchers                                            
+      192  
+      253 -```                                                           
+      254 -VITE_API_BASE_URL=http://localhost:3000                       
+      255 -```                                                           
+      193 +```ts                                                         
+      194 +// api/restaurants.ts                                         
+      195 +export const getRestaurants = (params) =>                     
+      196 +  client.get<PaginatedResponse<Restaurant>>('/restaurants', { 
+          +params }).then(r => r.data)                                   
+      197  
+      257 -### Key API calls                                             
+      198 +export const getRestaurant = (id: string) =>                  
+      199 +  client.get<Restaurant>(`/restaurants/${id}`).then(r => r.dat
+          +a)                                                            
+      200  
+      259 -| Module | Function | Method + Endpoint |                     
+      260 -|---|---|---|                                                 
+      261 -| `restaurants.ts` | `getRestaurants(params?)` | `GET /restaur
+          -ants?search=&category=` |                                     
+      262 -| `restaurants.ts` | `getRestaurant(id)` | `GET /restaurants/:
+          -id` |                                                         
+      263 -| `menus.ts` | `getMenu(restaurantId)` | `GET /restaurants/:id
+          -/menu` |                                                      
+      264 -| `orders.ts` | `placeOrder(payload)` | `POST /orders` |      
+      265 -| `orders.ts` | `getOrders()` | `GET /orders` |               
+      266 -| `orders.ts` | `getOrder(id)` | `GET /orders/:id` |          
+      267 -| `auth.ts` | `login(email, password)` | `POST /auth/login` → 
+          -`{ token, user }` |                                           
+      201 +// api/orders.ts                                              
+      202 +export const placeOrder = (body: PlaceOrderDto) =>            
+      203 +  client.post<Order>('/orders', body).then(r => r.data)       
+      204 +```                                                           
+      205  
+      269 -### Expected request/response shapes                          
+      206 +### TanStack Query Hooks                                      
+      207  
+      208  ```ts
+      272 -// POST /orders — request body                                
+      273 -{                                                             
+      274 -  restaurantId: string;                                       
+      275 -  items: { menuItemId: string; quantity: number; note?: string
+          - }[];                                                         
+      276 -  deliveryAddress: string;                                    
+      277 -}                                                             
+      209 +// hooks/useRestaurants.ts                                    
+      210 +export const useRestaurants = (params) =>                     
+      211 +  useQuery({ queryKey: ['restaurants', params], queryFn: () =>
+          + getRestaurants(params) })                                    
+      212  
+      279 -// POST /orders — response                                    
+      280 -{ orderId: string; estimatedMinutes: number; status: 'pending'
+          - }                                                            
+      213 +// hooks/useOrders.ts                                         
+      214 +export const usePlaceOrder = () =>                            
+      215 +  useMutation({                                               
+      216 +    mutationFn: placeOrder,                                   
+      217 +    onSuccess: (order) => {                                   
+      218 +      queryClient.invalidateQueries({ queryKey: ['orders'] }) 
+      219 +      navigate(`/orders/confirmation/${order.id}`)            
+      220 +    },                                                        
+      221 +  })                                                          
+      222  ```
+      223  
+      224  ---
+      225  
+      226  ## 7. Step-by-Step Implementation Order
+      227  
+      287 -Work through these phases in order. Commit at the end of each 
+          -phase.                                                        
+      288 -                                                              
+      228  ### Phase 1 — Project Scaffold (Day 1)
+      290 -1. `npm create vite@latest . -- --template react-ts` inside `f
+          -rontend/`                                                     
+      291 -2. Install dependencies:                                      
+      292 -   ```                                                        
+      293 -   npm i react-router-dom axios @tanstack/react-query zustand 
+      294 -   npm i react-hook-form @hookform/resolvers zod              
+      295 -   npm i lucide-react clsx tailwind-merge                     
+      296 -   npm i -D tailwindcss postcss autoprefixer prettier eslint  
+      297 -   ```                                                        
+      298 -3. Init Tailwind: `npx tailwindcss init -p`                   
+      299 -4. Install and init shadcn/ui: `npx shadcn@latest init`       
+      300 -5. Add shadcn components you will need upfront:               
+      301 -   ```                                                        
+      302 -   npx shadcn@latest add button card badge dialog drawer input
+          - label skeleton toast                                         
+      303 -   ```                                                        
+      304 -6. Create `src/lib/utils.ts` with `cn()` helper (shadcn genera
+          -tes this automatically)                                       
+      305 -7. Create `.env` from `.env.example`                          
+      306 -8. Verify `npm run dev` shows the Vite default screen         
+      229 +1. `npm create vite@latest frontend -- --template react-ts`   
+      230 +2. Install deps: `tailwindcss`, `@tailwindcss/vite`, `shadcn`,
+          + `zustand`, `@tanstack/react-query`, `react-router-dom`, `axio
+          +s`, `react-hook-form`, `@hookform/resolvers`, `zod`, `lucide-r
+          +eact`                                                         
+      231 +3. Initialize Tailwind (`npx tailwindcss init`) and shadcn (`n
+          +px shadcn init`)                                              
+      232 +4. Create `.env.local` and `.env.example`                     
+      233 +5. Set up `vite.config.ts` with `@` path alias                
+      234  
+      308 -### Phase 2 — Types + API Layer (Day 1–2)                     
+      309 -1. Write TypeScript interfaces in `src/types/` (restaurant, me
+          -nu item, order, user)                                         
+      310 -2. Create `src/api/client.ts` (Axios instance with interceptor
+          -s)                                                            
+      311 -3. Create `src/api/restaurants.ts`, `menus.ts`, `orders.ts`, `
+          -auth.ts`                                                      
+      312 -4. Smoke-test each fetcher in browser console (or write a quic
+          -k Vitest unit test)                                           
+      235 +### Phase 2 — Types + API Layer (Day 1)                       
+      236 +6. Define all shared TypeScript interfaces in `src/types/index
+          +.ts` (Restaurant, MenuItem, Order, User, PaginatedResponse, et
+          +c.)                                                           
+      237 +7. Create `src/api/client.ts` — Axios instance with both inter
+          +ceptors                                                       
+      238 +8. Create stub fetchers in `api/auth.ts`, `api/restaurants.ts`
+          +, `api/menu.ts`, `api/orders.ts`                              
+      239  
+      314 -### Phase 3 — Global State (Day 2)                            
+      315 -1. Build `src/store/authStore.ts` (with localStorage persisten
+          -ce)                                                           
+      316 -2. Build `src/store/cartStore.ts` (with localStorage persisten
+          -ce)                                                           
+      317 -3. Wrap `main.tsx` with `<QueryClientProvider>` from TanStack 
+          -Query                                                         
+      240 +### Phase 3 — Stores (Day 1)                                  
+      241 +9. Implement `store/authStore.ts` with Zustand persist        
+      242 +10. Implement `store/cartStore.ts` with Zustand persist (price
+          +s in cents, single-restaurant enforcement)                    
+      243  
+      319 -### Phase 4 — Layout Shell (Day 2)                            
+      320 -1. Build `Navbar` — logo, cart icon (reads from cartStore), lo
+          -gin/avatar                                                    
+      321 -2. Build `Footer`                                             
+      322 -3. Build `PageWrapper` (wraps Outlet)                         
+      323 -4. Set up the full route tree in `App.tsx` including `Protecte
+          -dRoute`                                                       
+      324 -5. Verify navigation between `/` and `/login` works           
+      244 +### Phase 4 — Router + Layout Shell (Day 2)                   
+      245 +11. Create `App.tsx` with React Router routes and `<AuthGuard>
+          +` wrappers                                                    
+      246 +12. Create `Navbar.tsx` (cart badge wired to cartStore.itemCou
+          +nt)                                                           
+      247 +13. Create `Footer.tsx`, `AuthGuard.tsx`, `NotFoundPage.tsx`  
+      248  
+      326 -### Phase 5 — Home Page (Day 3)                               
+      327 -1. Build `useRestaurants` hook (TanStack Query, `getRestaurant
+          -s`)                                                           
+      328 -2. Build `RestaurantCard` and `RestaurantGrid` (with skeleton 
+          -loaders)                                                      
+      329 -3. Wire up Home page — fetch and display restaurant grid      
+      330 -4. Add search input (debounced with `useEffect` + query param)
+      331 -5. Add category filter chips (pass as query param)            
+      249 +### Phase 5 — Auth Pages (Day 2)                              
+      250 +14. Create `LoginPage.tsx` — tabs for Login and Register      
+      251 +15. Implement `useAuth.ts` hooks calling `api/auth.ts`        
+      252 +16. On success: call `authStore.setAuth(token, user)`, redirec
+          +t to `?redirect` param or `/`                                 
+      253  
+      333 -### Phase 6 — Restaurant Detail + Menu (Day 3–4)              
+      334 -1. Build `useMenu` hook                                       
+      335 -2. Build `RestaurantHero`                                     
+      336 -3. Build `MenuItemCard` and `MenuSection`                     
+      337 -4. Build `MenuItemModal` — quantity selector, notes, "Add to c
+          -art" calls `cartStore.addItem`                                
+      338 -5. Wire up `RestaurantDetail` page                            
+      339 -6. Show a dialog warning when user tries to add items from a d
+          -ifferent restaurant                                           
+      254 +### Phase 6 — Home Page (Days 2–3)                            
+      255 +17. Implement `useRestaurants.ts` TanStack Query hook         
+      256 +18. Create `SearchBar.tsx` with 300 ms debounce + URL `?search
+          +=` sync                                                       
+      257 +19. Create `RestaurantCard.tsx` + `RestaurantGrid.tsx` with sk
+          +eleton loaders                                                
+      258 +20. Wire `HomePage.tsx` — fetch restaurants, render grid, pass
+          + search to URL                                                
+      259  
+      341 -### Phase 7 — Cart (Day 4)                                    
+      342 -1. Build `CartItem` and `CartSummary`                         
+      343 -2. Build `CartDrawer` (shadcn Drawer, opens from Navbar cart i
+          -con)                                                          
+      344 -3. Connect quantity steppers and remove button to `cartStore` 
+      345 -4. Show empty state when cart is empty                        
+      346 -5. "Go to checkout" button navigates to `/checkout` (guarded b
+          -y auth)                                                       
+      260 +### Phase 7 — Restaurant Detail + Menu (Day 3)                
+      261 +21. Implement `useMenu.ts` TanStack Query hook                
+      262 +22. Create `CategoryFilter.tsx`                               
+      263 +23. Create `MenuItemCard.tsx`                                 
+      264 +24. Create `MenuItemModal.tsx` with quantity selector + cart a
+          +ction                                                         
+      265 +25. Wire `RestaurantPage.tsx` — fetch restaurant + menu, rende
+          +r with category filter                                        
+      266  
+      348 -### Phase 8 — Login Page (Day 4)                              
+      349 -1. Build `Login` page — email + password form with Zod validat
+          -ion                                                           
+      350 -2. On success call `authStore.login(token, user)`, redirect to
+          - previous route                                               
+      267 +### Phase 8 — Cart (Day 4)                                    
+      268 +26. Create `CartItem.tsx` (quantity stepper + remove)         
+      269 +27. Create `CartDrawer.tsx` (shadcn Sheet) wired to cartStore 
+      270 +28. Wire cart icon in `Navbar.tsx` to open CartDrawer and show
+          + badge count                                                  
+      271  
+      352 -### Phase 9 — Checkout Page (Day 5)                           
+      353 -1. Display `CartSummary` (read-only)                          
+      354 -2. Delivery address field (React Hook Form + Zod)             
+      355 -3. "Place Order" triggers `placeOrder` mutation               
+      356 -4. On success navigate to `/orders/:orderId/confirmation`     
+      357 -5. Clear cart in mutation's `onSuccess` callback              
+      272 +### Phase 9 — Checkout (Day 4)                                
+      273 +29. Create `CheckoutForm.tsx` with React Hook Form + Zod valid
+          +ation                                                         
+      274 +30. Create `OrderSummary.tsx`                                 
+      275 +31. Wire `CheckoutPage.tsx` — pre-fill from cartStore, call `u
+          +sePlaceOrder`, clear cart on success                          
+      276  
+      359 -### Phase 10 — Order Confirmation + History (Day 5)           
+      360 -1. Build `OrderConfirmation` — success illustration, order id,
+          - estimated time                                               
+      361 -2. Build `OrderStatusBadge`                                   
+      362 -3. Build `OrderCard`                                          
+      363 -4. Build `OrderHistory` — list of `OrderCard`s using `useOrder
+          -s` hook                                                       
+      277 +### Phase 10 — Post-Order + History (Day 5)                   
+      278 +32. Create `OrderStatusBadge.tsx`                             
+      279 +33. Wire `OrderConfirmationPage.tsx` — fetch order by ID, show
+          + confirmation                                                 
+      280 +34. Implement `useOrders.ts` hooks                            
+      281 +35. Wire `OrderHistoryPage.tsx` — paginated list of past order
+          +s with status badges                                          
+      282  
+      365 -### Phase 11 — Polish + Accessibility (Day 6)                 
+      366 -1. Add page `<title>` updates with `useEffect`                
+      367 -2. Ensure all interactive elements have `aria-label` or visibl
+          -e label                                                       
+      368 -3. Verify keyboard navigation through cart drawer and modals  
+      369 -4. Add `prefers-reduced-motion` media query guard on any CSS a
+          -nimations                                                     
+      370 -5. Run Lighthouse — target Performance ≥ 90, Accessibility ≥ 9
+          -0                                                             
+      371 -6. Fix any failing audits                                     
+      283 +### Phase 11 — Error States + Polish (Day 5)                  
+      284 +36. Add empty states to RestaurantGrid ("No restaurants found"
+          +) and OrderHistoryPage ("No orders yet")                      
+      285 +37. Add toast notifications (shadcn Toaster) for order success
+          +, cart actions, errors                                        
+      286 +38. Add `LoadingSpinner` to all TanStack Query loading states 
+      287 +39. Ensure keyboard navigation works (Tab order, focus managem
+          +ent in modals)                                                
+      288  
+      373 -### Phase 12 — Error Handling + Edge Cases (Day 6)            
+      374 -1. Add `error.tsx` error boundary at root                     
+      375 -2. Show toast notifications (shadcn `toast`) on API errors    
+      376 -3. Handle empty states: no restaurants found, empty order hist
+          -ory                                                           
+      377 -4. Handle cart-from-different-restaurant conflict gracefully  
+      378 -5. 404 page for unknown routes                                
+      289 +### Phase 12 — Final Check (Day 6)                            
+      290 +40. `npm run build` — zero TypeScript errors                  
+      291 +41. Test golden path: register → browse → add items → checkout
+          + → confirm                                                    
+      292 +42. Test on mobile viewport (375px) — no horizontal overflow  
+      293 +43. Test with empty cart, unauthenticated access, unavailable 
+          +items                                                         
+      294  
+      295  ---
+      296  
+      382 -## 8. How to Run Locally                                      
+      297 +## 8. Environment Variables                                   
+      298  
+      384 -### Prerequisites                                             
+      385 -- Node.js >= 18                                               
+      386 -- npm >= 9                                                    
+      299 +```dotenv                                                     
+      300 +# frontend/.env.local (never commit)                          
+      301  
+      388 -### Steps                                                     
+      302 +VITE_API_BASE_URL=http://localhost:3000/api/v1                
+      303 +VITE_AI_API_BASE_URL=http://localhost:8001                    
+      304 +```                                                           
+      305  
+      390 -```bash                                                       
+      391 -# 1. Enter the frontend workspace                             
+      392 -cd frontend                                                   
+      306 +Create `frontend/.env.example` with same keys and placeholder 
+          +values — commit it, not `.env.local`.                         
+      307  
+      394 -# 2. Install dependencies (first time only)                   
+      395 -npm install                                                   
+      308 +---                                                           
+      309  
+      397 -# 3. Copy environment file and set your backend URL           
+      398 -cp .env.example .env                                          
+      399 -# Edit .env if your backend runs on a different port          
+      310 +## 9. How to Run Locally                                      
+      311  
+      401 -# 4. Start development server                                 
+      402 -npm run dev                                                   
+      403 -# Opens http://localhost:5173                                 
+      404 -```                                                           
+      312 +### Prerequisites                                             
+      313 +- Node.js 20 LTS, npm 10+                                     
+      314 +- Backend running on port 3000                                
+      315  
+      406 -### Other useful commands                                     
+      407 -                                                              
+      316  ```bash
+      409 -# Type-check without emitting                                 
+      410 -npm run tsc                                                   
+      317 +cd frontend                                                   
+      318 +npm install                                                   
+      319 +npm run dev        # Vite dev server at http://localhost:5173 
+      320 +```                                                           
+      321  
+      412 -# Lint                                                        
+      413 -npm run lint                                                  
+      414 -                                                              
+      415 -# Run unit tests (watch mode)                                 
+      416 -npm run test                                                  
+      417 -                                                              
+      418 -# Production build                                            
+      419 -npm run build                                                 
+      420 -                                                              
+      421 -# Preview production build locally                            
+      422 -npm run preview                                               
+      322 +### Build for Production                                      
+      323 +```bash                                                       
+      324 +npm run build      # Output in dist/                          
+      325 +npm run preview    # Preview production build locally         
+      326  ```
+      327  
+      425 -### Backend requirement                                       
+      426 -The frontend expects the REST API running at `http://localhost
+          -:3000` (configurable via `VITE_API_BASE_URL` in `.env`). Start
+          - the backend server before using the app.                     
+      427 -                                                              
+      328  ---
+      329  
+      430 -## Coding Conventions                                         
+      330 +## Key Design Decisions                                       
+      331  
+      432 -- All components are **functional, arrow-function, named expor
+          -ts** — no default exports on components                       
+      433 -- File names match the exported component name (`RestaurantCar
+          -d.tsx` exports `RestaurantCard`)                              
+      434 -- TanStack Query hooks live in `src/hooks/` — never call `useQ
+          -uery` directly inside a page component, always go through a ho
+          -ok                                                            
+      435 -- Tailwind classes are ordered: layout → sizing → spacing → co
+          -lor → typography — use Prettier plugin `prettier-plugin-tailwi
+          -ndcss` to auto-sort                                           
+      436 -- All prices are stored as **integers in cents** and formatted
+          - with `formatPrice(cents: number)` from `src/lib/utils.ts`    
+      437 -- Dates are formatted with `formatDate(isoString: string)` fro
+          -m the same utils file                                         
+      438 -                                                              
+      439 ----                                                           
+      440 -                                                              
+      441 -*Frontend Developer — Plan version 1.0 — 2026-05-12*          
+      332 +| Decision | Reason |                                         
+      333 +|----------|--------|                                         
+      334 +| Zustand over Redux | Zero boilerplate; perfect for cart + au
+          +th scope |                                                    
+      335 +| TanStack Query over raw useEffect | Built-in caching, loadin
+          +g/error states, deduplication |                               
+      336 +| Prices in cents (integers) | Floating-point arithmetic cause
+          +s display bugs |                                              
+      337 +| shadcn/ui | You own the code; accessible by default; no blac
+          +k-box library updates |                                       
+      338 +| CartDrawer (slide-over) | Keeps user on menu while managing 
+          +cart — better UX than navigating to a cart page |             
+      339 +| Single Axios instance | One place to set auth headers and ha
+          +ndle 401 — no duplicate logic across fetchers |               
+      340 +| All components as named exports | Easier to import, refactor
+          +, and mock in tests |                                         
+
+● Write(ai\PLAN.md)
+  ⎿  Added 238 lines, removed 468 lines
+        1  # AI Engineering Plan — Online Restaurant Ordering Platform
+        2  
+        3 -## Overview                                                   
+        4 -                                                              
+        5 -This document is the authoritative technical plan for all AI f
+          -eatures built inside the `ai/` folder. All AI services run as 
+          -independent Python microservices (FastAPI) that the main backe
+          -nd REST API calls over HTTP. No AI logic lives inside the back
+          -end itself.                                                   
+        6 -                                                              
+        7 ----                                                           
+        8 -                                                              
+        3  ## 1. AI Features to Build
+        4  
+       11 -### Feature 1 — Personalized Restaurant & Dish Recommendations
+        5 +| # | Feature | Port | Tech | When it ships |                 
+        6 +|---|---------|------|------|---------------|                 
+        7 +| 1 | Semantic Search | 8001 | OpenAI embeddings + Chroma | Da
+          +y 3 — no training data needed |                               
+        8 +| 2 | Chatbot Ordering Assistant | 8002 | GPT-4o + function ca
+          +lling | Day 6 — no training data needed |                     
+        9 +| 3 | Review Sentiment Analysis | 8003 | GPT-4o-mini | Day 9 —
+          + retroactive on existing reviews |                            
+       10 +| 4 | Smart Upsell Engine | 8004 | Co-occurrence matrix | Day 
+          +13 — needs order history |                                    
+       11 +| 5 | Personalized Recommendations | 8005 | ALS collaborative 
+          +filtering | Day 16 — most data-hungry |                       
+       12  
+       13 -**What it does:** Returns a ranked list of restaurants and dis
+          -hes for a given user based on their order history, browsing be
+          -havior, and explicit preferences.                             
+       14 -                                                              
+       15 -**Why it matters:** Directly increases average order value and
+          - retention. A user who sees relevant food first orders faster 
+          -and more often.                                               
+       16 -                                                              
+       17 -**Algorithm:** Hybrid recommender — collaborative filtering (u
+          -ser-item matrix via implicit feedback) combined with content-b
+          -ased filtering (item embeddings). Cold-start users fall back t
+          -o popularity-weighted trending items.                         
+       18 -                                                              
+       13  ---
+       14  
+       21 -### Feature 2 — Semantic Search for Restaurants and Dishes    
+       22 -                                                              
+       23 -**What it does:** Accepts a natural-language query ("spicy veg
+          -an bowl under $15") and returns semantically ranked restaurant
+          -s and menu items rather than keyword-matched rows.            
+       24 -                                                              
+       25 -**Why it matters:** Users rarely know the exact dish name. Sem
+          -antic search converts intent into results, reducing abandonmen
+          -t.                                                            
+       26 -                                                              
+       27 -**Algorithm:** Embed all menu item descriptions and restaurant
+          - profiles with `text-embedding-3-small` (OpenAI). Store in a v
+          -ector DB (Chroma, local; Pinecone for production). At query ti
+          -me, embed the user query, run approximate nearest-neighbor sea
+          -rch, rerank with a lightweight cross-encoder.                 
+       28 -                                                              
+       29 ----                                                           
+       30 -                                                              
+       31 -### Feature 3 — AI Chatbot Ordering Assistant                 
+       32 -                                                              
+       33 -**What it does:** A conversational assistant embedded in the o
+          -rdering flow. Users can say "I want something spicy from a Tha
+          -i place, under $20, for two people" and the assistant returns 
+          -structured order suggestions, collects item selections, and ha
+          -nds off a pre-filled cart to the frontend.                    
+       34 -                                                              
+       35 -**Why it matters:** Reduces friction for indecisive users and 
+          -handles complex multi-item orders that are hard to compose thr
+          -ough a traditional menu UI.                                   
+       36 -                                                              
+       37 -**Algorithm:** GPT-4o (or Claude claude-sonnet-4-6) with funct
+          -ion-calling / tool use. Tools are thin wrappers around the bac
+          -kend REST API (search restaurants, get menu, add to cart). Con
+          -versation state is managed server-side per session.           
+       38 -                                                              
+       39 ----                                                           
+       40 -                                                              
+       41 -### Feature 4 — Review Sentiment Analysis & Dish-Level Tagging
+       42 -                                                              
+       43 -**What it does:** When a user submits a review, the AI pipelin
+          -e (a) classifies sentiment (positive / neutral / negative), (b
+          -) extracts mentioned dishes, and (c) attaches aspect-level lab
+          -els (taste, portion, price, delivery speed). Aggregated scores
+          - appear on the restaurant and dish detail pages.              
+       44 -                                                              
+       45 -**Why it matters:** Structured sentiment signals help other us
+          -ers decide what to order and gives restaurant operators action
+          -able feedback beyond a star rating.                           
+       46 -                                                              
+       47 -**Algorithm:** Zero-shot classification with `gpt-4o-mini` for
+          - aspect labeling (cheap per token, fast). Fine-tuned `distilbe
+          -rt-base-uncased` for binary sentiment if cost becomes a concer
+          -n. Named-entity recognition with spaCy for dish extraction mat
+          -ched against the menu catalog.                                
+       48 -                                                              
+       49 ----                                                           
+       50 -                                                              
+       51 -### Feature 5 — Smart Order Upsell Engine                     
+       52 -                                                              
+       53 -**What it does:** At checkout, suggests 1–3 complementary add-
+          -ons ("people who ordered this burger also added large fries an
+          -d a milkshake"). Suggestions are specific to the current cart 
+          -contents and the restaurant's available menu.                 
+       54 -                                                              
+       55 -**Why it matters:** Upsell is the highest-ROI AI feature in e-
+          -commerce. Even a 10% attach rate on suggested items meaningful
+          -ly improves revenue per order.                                
+       56 -                                                              
+       57 -**Algorithm:** Item-to-item collaborative filtering (co-occurr
+          -ence matrix over historical orders). Falls back to manually cu
+          -rated "pairs well with" rules seeded from the menu category st
+          -ructure until enough order data accumulates.                  
+       58 -                                                              
+       59 ----                                                           
+       60 -                                                              
+       15  ## 2. Tech Stack
+       16  
+       63 -| Layer | Choice | Reason |                                   
+       64 -|---|---|---|                                                 
+       65 -| Language | Python 3.11 | Ecosystem dominance for ML/AI |    
+       66 -| Web framework | FastAPI | Async, auto-docs, easy to containe
+          -rize |                                                        
+       67 -| LLM API | OpenAI (GPT-4o, GPT-4o-mini, text-embedding-3-smal
+          -l) | Best tool-calling support, cheap embedding model |       
+       68 -| Fallback LLM | Anthropic (claude-sonnet-4-6) | Optional; swa
+          -p via env var |                                               
+       69 -| Vector DB (local dev) | Chroma | Zero-config, file-backed, P
+          -ython-native |                                                
+       70 -| Vector DB (production) | Pinecone | Managed, scalable, fast 
+          -ANN |                                                         
+       71 -| ML library | scikit-learn, implicit (ALS) | Collaborative fi
+          -ltering |                                                     
+       72 -| NLP | spaCy (en_core_web_sm) | Fast NER for dish extraction 
+          -|                                                             
+       73 -| Data layer | pandas, numpy | Feature engineering |          
+       74 -| Model tracking | MLflow (local) | Experiment tracking, model
+          - registry |                                                   
+       75 -| Testing | pytest, httpx | Unit + integration tests |        
+       76 -| Containerization | Docker + docker-compose | Reproducible lo
+          -cal env |                                                     
+       77 -| Dependency management | pip + requirements.txt per service |
+          - Simple, CI-friendly |                                        
+       17 +| Concern | Choice |                                          
+       18 +|---------|--------|                                          
+       19 +| Language | Python 3.11+ |                                   
+       20 +| API framework | FastAPI + Uvicorn |                         
+       21 +| LLM provider | OpenAI (GPT-4o, GPT-4o-mini, text-embedding-3
+          +-small) |                                                     
+       22 +| Vector database | Chroma (local, file-backed) → swap to Pine
+          +cone in prod via env var |                                    
+       23 +| Collaborative filtering | `implicit` library (ALS) |        
+       24 +| Data serialization | `pickle` for trained models |          
+       25 +| HTTP client | `httpx` (async) for calling backend API |     
+       26 +| Validation | Pydantic v2 |                                  
+       27 +| Environment | `python-dotenv` |                             
+       28 +| Dependency management | `pip` + `requirements.txt` per servi
+          +ce |                                                          
+       29  
+       30  ---
+       31  
+       81 -## 3. Folder Structure Inside `ai/`                           
+       32 +## 3. Folder Structure                                        
+       33  
+       34  ```
+       35  ai/
+       85 -├── PLAN.md                          # This document          
+       86 -├── .env.example                     # All required env vars (
+          -no secrets)                                                   
+       87 -├── docker-compose.yml               # Orchestrates all AI ser
+          -vices locally                                                 
+       36 +├── PLAN.md                                                   
+       37 +├── shared/                                                   
+       38 +│   ├── auth.py             # X-Service-Key validation middlew
+          +are                                                           
+       39 +│   ├── models.py           # Shared Pydantic schemas         
+       40 +│   └── backend_client.py   # httpx client to call backend RES
+          +T API                                                         
+       41  │
+       89 -├── shared/                          # Code shared across all 
+          -services                                                      
+       90 -│   ├── __init__.py                                           
+       91 -│   ├── backend_client.py            # HTTP client for the RES
+          -T API                                                         
+       92 -│   ├── config.py                    # Loads env vars, validat
+          -es at startup                                                 
+       93 -│   └── models.py                   # Shared Pydantic schemas 
+       42 +├── service-search/         # Semantic Search — port 8001     
+       43 +│   ├── main.py                                               
+       44 +│   ├── embedder.py         # Embed text with text-embedding-3
+          +-small                                                        
+       45 +│   ├── indexer.py          # Build/refresh Chroma index from 
+          +menu items                                                    
+       46 +│   ├── searcher.py         # Query Chroma, return ranked resu
+          +lts                                                           
+       47 +│   ├── requirements.txt                                      
+       48 +│   └── .env.example                                          
+       49  │
+       95 -├── services/                                                 
+       96 -│   ├── recommendations/             # Feature 1              
+       97 -│   │   ├── main.py                  # FastAPI app, /recommend
+          - endpoint                                                     
+       98 -│   │   ├── recommender.py           # Hybrid recommender logi
+          -c                                                             
+       99 -│   │   ├── train.py                 # Offline training script
+      100 -│   │   ├── requirements.txt                                  
+      101 -│   │   └── Dockerfile                                        
+      102 -│   │                                                         
+      103 -│   ├── search/                      # Feature 2              
+      104 -│   │   ├── main.py                  # FastAPI app, /search en
+          -dpoint                                                        
+      105 -│   │   ├── indexer.py               # Embeds and indexes menu
+          - + restaurants                                                
+      106 -│   │   ├── searcher.py              # Query embedding + ANN +
+          - rerank                                                       
+      107 -│   │   ├── requirements.txt                                  
+      108 -│   │   └── Dockerfile                                        
+      109 -│   │                                                         
+      110 -│   ├── chatbot/                     # Feature 3              
+      111 -│   │   ├── main.py                  # FastAPI app, /chat endp
+          -oint (POST + WebSocket)                                       
+      112 -│   │   ├── agent.py                 # LLM agent with tool def
+          -initions                                                      
+      113 -│   │   ├── tools.py                 # Tool implementations (c
+          -all backend API)                                              
+      114 -│   │   ├── session_store.py         # In-memory conversation 
+          -state (Redis-ready)                                           
+      115 -│   │   ├── requirements.txt                                  
+      116 -│   │   └── Dockerfile                                        
+      117 -│   │                                                         
+      118 -│   ├── sentiment/                   # Feature 4              
+      119 -│   │   ├── main.py                  # FastAPI app, /analyze-r
+          -eview endpoint                                                
+      120 -│   │   ├── analyzer.py              # Sentiment + aspect + NE
+          -R pipeline                                                    
+      121 -│   │   ├── requirements.txt                                  
+      122 -│   │   └── Dockerfile                                        
+      123 -│   │                                                         
+      124 -│   └── upsell/                      # Feature 5              
+      125 -│       ├── main.py                  # FastAPI app, /upsell en
+          -dpoint                                                        
+      126 -│       ├── upsell_engine.py         # Co-occurrence matrix + 
+          -rule fallback                                                 
+      127 -│       ├── train.py                 # Offline co-occurrence c
+          -omputation                                                    
+      128 -│       ├── requirements.txt                                  
+      129 -│       └── Dockerfile                                        
+       50 +├── service-chatbot/        # Chatbot Ordering Assistant — por
+          +t 8002                                                        
+       51 +│   ├── main.py                                               
+       52 +│   ├── tools.py            # Function definitions for GPT too
+          +l calling                                                     
+       53 +│   ├── session.py          # In-memory conversation session m
+          +anagement                                                     
+       54 +│   ├── requirements.txt                                      
+       55 +│   └── .env.example                                          
+       56  │
+      131 -├── data/                            # Local data artifacts (g
+          -itignored except structure)                                   
+      132 -│   ├── .gitkeep                                              
+      133 -│   ├── chroma/                      # Chroma vector DB files 
+      134 -│   ├── models/                      # Serialized model artifa
+          -cts (.pkl, .npz)                                              
+      135 -│   └── mlflow/                      # MLflow tracking data   
+       57 +├── service-sentiment/      # Review Sentiment Analysis — port
+          + 8003                                                         
+       58 +│   ├── main.py                                               
+       59 +│   ├── classifier.py       # GPT-4o-mini prompt + response pa
+          +rser                                                          
+       60 +│   ├── batch.py            # Batch process all existing revie
+          +ws                                                            
+       61 +│   ├── requirements.txt                                      
+       62 +│   └── .env.example                                          
+       63  │
+      137 -├── notebooks/                       # Exploratory analysis, k
+          -ept separate from prod code                                   
+      138 -│   ├── 01_data_exploration.ipynb                             
+      139 -│   ├── 02_recommendation_dev.ipynb                           
+      140 -│   ├── 03_search_embedding_eval.ipynb                        
+      141 -│   └── 04_sentiment_eval.ipynb                               
+       64 +├── service-upsell/         # Smart Upsell Engine — port 8004 
+       65 +│   ├── main.py                                               
+       66 +│   ├── cooccurrence.py     # Build item co-occurrence matrix 
+          +from orders                                                   
+       67 +│   ├── trainer.py          # Retrain script (run nightly)    
+       68 +│   ├── model/              # Persisted .pkl files            
+       69 +│   ├── requirements.txt                                      
+       70 +│   └── .env.example                                          
+       71  │
+      143 -└── tests/                                                    
+      144 -    ├── test_recommendations.py                               
+      145 -    ├── test_search.py                                        
+      146 -    ├── test_chatbot.py                                       
+      147 -    ├── test_sentiment.py                                     
+      148 -    └── test_upsell.py                                        
+       72 +├── service-recommendations/ # Personalized Recommendations — 
+          +port 8005                                                     
+       73 +│   ├── main.py                                               
+       74 +│   ├── als_model.py        # ALS training + inference with `i
+          +mplicit`                                                      
+       75 +│   ├── trainer.py          # Retrain script                  
+       76 +│   ├── model/              # Persisted .pkl files            
+       77 +│   ├── requirements.txt                                      
+       78 +│   └── .env.example                                          
+       79 +│                                                             
+       80 +└── scripts/                                                  
+       81 +    ├── seed_index.py       # One-time: embed all menu items i
+          +nto Chroma                                                    
+       82 +    ├── retrain_all.py      # Triggers upsell + recommendation
+          + retraining                                                   
+       83 +    └── test_services.sh    # Smoke-test all 5 services       
+       84  ```
+       85  
+       86  ---
+       87  
+      153 -## 4. Architecture — End-to-End Per Feature                   
+       88 +## 4. Architecture — How Each Service Works                   
+       89  
+      155 -### 4.1 Personalized Recommendations                          
+       90 +### All Services — Common Pattern                             
+       91  
+       92 +Every service:                                                
+       93 +1. Runs as an independent FastAPI app on its own port         
+       94 +2. Validates incoming requests with `X-Service-Key` header (ch
+          +ecked in `shared/auth.py`)                                    
+       95 +3. The backend REST API proxies calls to these services — the 
+          +frontend never calls them directly                            
+       96 +                                                              
+       97  ```
+      158 -User request                                                  
+      159 -    │                                                         
+      160 -    ▼                                                         
+      161 -Backend REST API                                              
+      162 -    │  POST /ai/recommendations                               
+      163 -    │  Body: { user_id, context: { current_restaurant_id? } } 
+      164 -    ▼                                                         
+      165 -recommendations/main.py (FastAPI, port 8001)                  
+      166 -    │                                                         
+      167 -    ├── Fetch user order history  ──▶  backend_client.get_user
+          -_orders(user_id)                                              
+      168 -    ├── Load ALS model from disk  ──▶  data/models/als_model.p
+          -kl                                                            
+      169 -    ├── Score all restaurants/items for user                  
+      170 -    ├── Apply business rules (out-of-stock filter, location fi
+          -lter)                                                         
+      171 -    └── Return ranked list { restaurants: [...], dishes: [...]
+          - }                                                            
+      172 -    │                                                         
+      173 -    ▼                                                         
+      174 -Backend caches response (5-min TTL) and serves to frontend    
+       98 +Frontend → Backend (Node.js :3000) → AI Service (Python :800x)
+       99  ```
+      100  
+      177 -**Offline training (runs nightly via cron or GitHub Actions):*
+          -*                                                             
+      101 +Backend calls AI services with:                               
+      102  ```
+      179 -services/recommendations/train.py                             
+      180 -    │                                                         
+      181 -    ├── Pull all orders from backend API (paginated)          
+      182 -    ├── Build user-item interaction matrix (scipy sparse)     
+      183 -    ├── Train ALS model (implicit library, 50 factors, 20 iter
+          -ations)                                                       
+      184 -    ├── Serialize to data/models/als_model.pkl                
+      185 -    └── Log metrics to MLflow                                 
+      103 +POST http://localhost:800x/endpoint                           
+      104 +Headers: X-Service-Key: <SERVICE_KEY>                         
+      105 +Body: JSON                                                    
+      106  ```
+      107  
+      108  ---
+      109  
+      190 -### 4.2 Semantic Search                                       
+      110 +### Service 1 — Semantic Search (port 8001)                   
+      111  
+      192 -```                                                           
+      193 -User types query in search bar                                
+      194 -    │                                                         
+      195 -    ▼                                                         
+      196 -Frontend  ──▶  Backend REST API                               
+      197 -    │  GET /ai/search?q=spicy+vegan+bowl&limit=10             
+      198 -    ▼                                                         
+      199 -search/main.py (FastAPI, port 8002)                           
+      200 -    │                                                         
+      201 -    ├── Embed query: openai.embeddings.create(model="text-embe
+          -dding-3-small", input=query)                                  
+      202 -    ├── Query Chroma collection "menu_items" with embedding ve
+          -ctor, top_k=50                                                
+      203 -    ├── Query Chroma collection "restaurants" with embedding v
+          -ector, top_k=20                                               
+      204 -    ├── Rerank with cross-encoder (cross-encoder/ms-marco-Mini
+          -LM-L-6-v2, sentence-transformers)                             
+      205 -    └── Return { restaurants: [...], menu_items: [...] }      
+      206 -```                                                           
+      112 +**Goal**: Find restaurants/dishes by meaning, not just keyword
+          + match. "spicy noodles" finds pho and ramen even if those exac
+          +t words aren't in the menu.                                   
+      113  
+      208 -**Index build (run once, then on every menu update via webhook
+          -):**                                                          
+      209 -```                                                           
+      210 -services/search/indexer.py                                    
+      211 -    │                                                         
+      212 -    ├── Fetch all restaurants + menu items from backend       
+      213 -    ├── Construct text representation per item:               
+      214 -    │     "{dish_name}. {description}. Category: {category}. P
+          -rice: {price}."                                               
+      215 -    ├── Batch embed (openai.embeddings.create, batch size 100)
+      216 -    ├── Upsert into Chroma with metadata: { item_id, restauran
+          -t_id, price, category }                                       
+      217 -    └── Save index version timestamp to data/models/index_vers
+          -ion.json                                                      
+      218 -```                                                           
+      114 +**How it works**:                                             
+      115 +1. **Indexing** (run once, then on menu changes): Embed each r
+          +estaurant name + description and each menu item name + descrip
+          +tion using `text-embedding-3-small`. Store vectors in Chroma w
+          +ith metadata (restaurantId, name, type).                      
+      116 +2. **Query**: Embed the user's search query → query Chroma for
+          + top-N most similar vectors → return ranked results.          
+      117  
+      220 ----                                                           
+      221 -                                                              
+      222 -### 4.3 Chatbot Ordering Assistant                            
+      223 -                                                              
+      118 +**API**:                                                      
+      119  ```
+      225 -User opens chat widget                                        
+      226 -    │                                                         
+      227 -    ▼                                                         
+      228 -Frontend WebSocket  ──▶  chatbot/main.py (FastAPI, port 8003) 
+      229 -    │                                                         
+      230 -    ├── POST /chat/session           → creates session_id, ret
+          -urns it                                                       
+      231 -    ├── WS  /chat/ws/{session_id}    → bidirectional stream   
+      232 -    │                                                         
+      233 -    └── On each user message:                                 
+      234 -          │                                                   
+      235 -          ├── Load conversation history from session_store (in
+          --memory dict or Redis)                                        
+      236 -          ├── Call LLM (GPT-4o) with:                         
+      237 -          │     system_prompt = "You are a friendly ordering a
+          -ssistant for [platform]..."                                   
+      238 -          │     tools = [search_restaurants, get_menu, get_car
+          -t, add_to_cart, remove_from_cart]                             
+      239 -          │     messages = [history + new user message]       
+      240 -          │                                                   
+      241 -          ├── LLM decides to call a tool?                     
+      242 -          │     YES → execute tool (calls backend REST API), a
+          -ppend tool result to history, re-call LLM                     
+      243 -          │     NO  → stream assistant text back to user via W
+          -ebSocket                                                      
+      244 -          │                                                   
+      245 -          └── Update session history                          
+      120 +POST /search                                                  
+      121 +Body: { "query": "spicy noodles", "limit": 10, "type": "restau
+          +rant" | "item" | "all" }                                      
+      122 +Response: { "results": [{ "id", "name", "type", "score", "rest
+          +aurantId" }] }                                                
+      123  ```
+      124  
+      248 -**Tool definitions (tools.py):**                              
+      249 -- `search_restaurants(query, cuisine, max_price_per_dish, loca
+          -tion)` — calls `GET /restaurants?search=...`                  
+      250 -- `get_menu(restaurant_id)` — calls `GET /restaurants/{id}/men
+          -u`                                                            
+      251 -- `add_to_cart(session_id, item_id, quantity)` — calls `POST /
+          -cart/items`                                                   
+      252 -- `get_cart(session_id)` — calls `GET /cart/{session_id}`     
+      253 -- `remove_from_cart(session_id, item_id)` — calls `DELETE /car
+          -t/items/{item_id}`                                            
+      125 +**Key files**:                                                
+      126 +- `embedder.py` — wraps `openai.embeddings.create(model="text-
+          +embedding-3-small", input=text)`                              
+      127 +- `indexer.py` — fetches all restaurants+menu items from backe
+          +nd, embeds them, upserts into Chroma                          
+      128 +- `searcher.py` — `chroma_collection.query(query_embeddings=[.
+          +..], n_results=limit)`                                        
+      129  
+      130  ---
+      131  
+      257 -### 4.4 Review Sentiment Analysis                             
+      132 +### Service 2 — Chatbot Ordering Assistant (port 8002)        
+      133  
+      259 -```                                                           
+      260 -User submits review                                           
+      261 -    │                                                         
+      262 -    ▼                                                         
+      263 -Backend REST API saves raw review, fires async call to AI serv
+          -ice                                                           
+      264 -    │  POST /ai/analyze-review                                
+      265 -    │  Body: { review_id, restaurant_id, text, rating }       
+      266 -    ▼                                                         
+      267 -sentiment/main.py (FastAPI, port 8004)                        
+      268 -    │                                                         
+      269 -    ├── STEP 1 — Sentiment classification                     
+      270 -    │     GPT-4o-mini:  "Classify sentiment: positive/neutral/
+          -negative. Return JSON."                                       
+      271 -    │                                                         
+      272 -    ├── STEP 2 — Aspect labeling                              
+      273 -    │     GPT-4o-mini zero-shot:                              
+      274 -    │     "Label these aspects if mentioned: taste, portion_si
+          -ze, price, delivery_speed,                                    
+      275 -    │      packaging, customer_service. Return JSON { aspect: 
+          -score_1_to_5 }."                                              
+      276 -    │                                                         
+      277 -    ├── STEP 3 — Dish extraction                              
+      278 -    │     spaCy NER (en_core_web_sm) + fuzzy match against res
+          -taurant's menu catalog                                        
+      279 -    │     Returns: [{ dish_id, dish_name, mentioned_sentiment 
+          -}]                                                            
+      280 -    │                                                         
+      281 -    └── STEP 4 — Write results back                           
+      282 -          Backend client: PATCH /reviews/{review_id}          
+      283 -          Body: { sentiment, aspects, mentioned_dishes, ai_pro
+          -cessed: true }                                                
+      284 -```                                                           
+      134 +**Goal**: Let users describe what they want in natural languag
+          +e and get helped to build an order.                           
+      135  
+      286 ----                                                           
+      136 +**How it works**:                                             
+      137 +1. User sends a message: "I want a large pepperoni pizza and a
+          + Coke"                                                        
+      138 +2. GPT-4o decides which tool(s) to call                       
+      139 +3. Service executes the tool, returns result to GPT-4o        
+      140 +4. GPT-4o generates a natural language response               
+      141 +5. Session state stored in memory keyed by `sessionId`        
+      142  
+      288 -### 4.5 Smart Upsell Engine                                   
+      289 -                                                              
+      143 +**Tools (function calling)**:                                 
+      144 +```python                                                     
+      145 +tools = [                                                     
+      146 +  search_menu(query, restaurantId),                           
+      147 +  add_to_cart(menuItemId, quantity),                          
+      148 +  view_cart(),                                                
+      149 +  get_restaurant_info(restaurantId),                          
+      150 +  place_order(deliveryAddress),                               
+      151 +]                                                             
+      152  ```
+      291 -User reaches checkout with cart items                         
+      292 -    │                                                         
+      293 -    ▼                                                         
+      294 -Backend REST API                                              
+      295 -    │  POST /ai/upsell                                        
+      296 -    │  Body: { restaurant_id, cart_item_ids: [id1, id2] }     
+      297 -    ▼                                                         
+      298 -upsell/main.py (FastAPI, port 8005)                           
+      299 -    │                                                         
+      300 -    ├── Load co-occurrence matrix for restaurant_id from data/
+          -models/upsell_{restaurant_id}.npz                             
+      301 -    │     (falls back to global matrix if restaurant has < 100
+          - orders)                                                      
+      302 -    │                                                         
+      303 -    ├── Score all menu items by sum of co-occurrence weights w
+          -ith cart items                                                
+      304 -    │                                                         
+      305 -    ├── Filter: remove items already in cart, out-of-stock ite
+          -ms                                                            
+      306 -    │                                                         
+      307 -    ├── Return top 3 suggestions with confidence scores       
+      308 -    │                                                         
+      309 -    └── { suggestions: [{ item_id, item_name, price, confidenc
+          -e, reason_text }] }                                           
+      310 -```                                                           
+      153  
+      312 -**Offline training (nightly):**                               
+      154 +**API**:                                                      
+      155  ```
+      314 -services/upsell/train.py                                      
+      315 -    │                                                         
+      316 -    ├── Fetch all completed orders from backend               
+      317 -    ├── Group by order_id, collect sets of item_ids per order 
+      318 -    ├── Compute pairwise co-occurrence counts (scipy sparse ma
+          -trix)                                                         
+      319 -    ├── Normalize by item popularity (TF-IDF style weighting) 
+      320 -    ├── Serialize per-restaurant matrices to data/models/upsel
+          -l_{restaurant_id}.npz                                         
+      321 -    └── Log coverage metrics to MLflow                        
+      156 +POST /chat                                                    
+      157 +Body: { "sessionId": "abc123", "restaurantId": "...", "message
+          +": "I want a large pepperoni pizza" }                         
+      158 +Response: { "reply": "I found...", "cartUpdated": true, "cart"
+          +: [...] }                                                     
+      159  ```
+      160  
+      161  ---
+      162  
+      326 -## 5. Step-by-Step Implementation Order                       
+      163 +### Service 3 — Review Sentiment Analysis (port 8003)         
+      164  
+      328 -Implementation follows a dependency-first, value-first sequenc
+          -e. Each step is independently shippable.                      
+      165 +**Goal**: Classify restaurant reviews as POSITIVE / NEUTRAL / 
+          +NEGATIVE and extract key themes.                              
+      166  
+      330 -### Phase 0 — Foundation (Day 1–2)                            
+      167 +**How it works**: Single GPT-4o-mini call per review with a st
+          +ructured prompt, parsed with Pydantic.                        
+      168  
+      332 -1. Create `ai/` folder structure as defined in Section 3.     
+      333 -2. Write `shared/config.py` — loads and validates all env vars
+          - at import time, raises clear errors if missing.              
+      334 -3. Write `shared/backend_client.py` — thin async `httpx` clien
+          -t wrapping all backend REST endpoints needed by AI services. W
+          -rite unit tests with `respx` mocking.                         
+      335 -4. Write `ai/.env.example` with all required variables (see Se
+          -ction 6).                                                     
+      336 -5. Write `ai/docker-compose.yml` with all 5 services + a share
+          -d network.                                                    
+      337 -6. Set up MLflow tracking server container in `docker-compose.
+          -yml`.                                                         
+      169 +**Prompt**:                                                   
+      170 +```                                                           
+      171 +Analyze this restaurant review and return JSON:               
+      172 +{ "sentiment": "POSITIVE"|"NEUTRAL"|"NEGATIVE", "score": 0.0-1
+          +.0, "themes": ["fast delivery", ...] }                        
+      173  
+      339 -### Phase 1 — Semantic Search (Day 3–5)                       
+      174 +Review: {review_text}                                         
+      175 +```                                                           
+      176  
+      341 -Semantic search is the highest-visibility, lowest-risk first f
+          -eature. It has no dependency on historical order data.        
+      177 +**API**:                                                      
+      178 +```                                                           
+      179 +POST /analyze                                                 
+      180 +Body: { "reviewId": "...", "text": "Great food, fast delivery!
+          +", "restaurantId": "..." }                                    
+      181 +Response: { "sentiment": "POSITIVE", "score": 0.92, "themes": 
+          +["fast delivery", "great food"] }                             
+      182  
+      343 -7. Implement `search/indexer.py` — embed all seeded restaurant
+          -s and menu items, store in Chroma.                            
+      344 -8. Implement `search/searcher.py` — query + rerank pipeline.  
+      345 -9. Implement `search/main.py` — FastAPI app with `GET /search`
+          - endpoint.                                                    
+      346 -10. Write tests for the search service.                       
+      347 -11. Expose `GET /ai/search` proxy route in the backend (backen
+          -d team implements the HTTP call to port 8002).                
+      183 +POST /batch                                                   
+      184 +Body: { "reviews": [{ "reviewId", "text", "restaurantId" }] } 
+      185 +Response: { "results": [...] }                                
+      186 +```                                                           
+      187  
+      349 -### Phase 2 — Chatbot Ordering Assistant (Day 6–9)            
+      188 +---                                                           
+      189  
+      351 -The chatbot can operate entirely from the backend REST API and
+          - needs no training data.                                      
+      190 +### Service 4 — Smart Upsell Engine (port 8004)               
+      191  
+      353 -12. Implement `chatbot/tools.py` — one function per tool, each
+          - wrapping `backend_client`.                                   
+      354 -13. Implement `chatbot/agent.py` — LLM agent loop with tool-ca
+          -ll handling. Test with unit tests that mock OpenAI responses. 
+      355 -14. Implement `chatbot/session_store.py` — in-memory dict with
+          - TTL expiry (swap to Redis later).                            
+      356 -15. Implement `chatbot/main.py` — REST endpoint `POST /chat` (
+          -single-turn) and WebSocket `WS /chat/ws/{session_id}` (multi-t
+          -urn streaming).                                               
+      357 -16. Write integration tests using a mock LLM response fixture.
+      192 +**Goal**: "Customers who ordered X also ordered Y." Based on i
+          +tem co-occurrence in historical orders.                       
+      193  
+      359 -### Phase 3 — Review Sentiment Analysis (Day 10–12)           
+      194 +**How it works**:                                             
+      195 +1. **Training**: Fetch all orders from backend. Build a co-occ
+          +urrence matrix — for each order, for each pair of items, incre
+          +ment `matrix[item_a][item_b]`. Normalize by item frequency. Se
+          +rialize to `model/cooccurrence.pkl`.                          
+      196 +2. **Inference**: Load matrix, look up input item IDs, return 
+          +top-N most co-occurring items not already in the cart.        
+      197  
+      361 -Depends only on reviews existing. Can be deployed and run retr
+          -oactively on existing reviews.                                
+      198 +**API**:                                                      
+      199 +```                                                           
+      200 +POST /upsell                                                  
+      201 +Body: { "currentItemIds": ["id1", "id2"], "restaurantId": "...
+          +", "limit": 3 }                                               
+      202 +Response: { "suggestions": [{ "menuItemId", "name", "price", "
+          +score" }] }                                                   
+      203 +```                                                           
+      204  
+      363 -17. Implement `sentiment/analyzer.py` — three-step pipeline (L
+          -LM sentiment, LLM aspects, spaCy NER).                        
+      364 -18. Implement `sentiment/main.py` — `POST /analyze-review`.   
+      365 -19. Ask backend team to add async webhook call from review sub
+          -mission endpoint to this service.                             
+      366 -20. Run retroactively on all seeded reviews: `python -m servic
+          -es.sentiment.backfill`.                                       
+      367 -21. Write tests with fixture review texts and expected outputs
+          -.                                                             
+      205 +---                                                           
+      206  
+      369 -### Phase 4 — Upsell Engine (Day 13–15)                       
+      207 +### Service 5 — Personalized Recommendations (port 8005)      
+      208  
+      371 -Needs at least some order data. Use seeded/synthetic orders fo
+          -r early development.                                          
+      209 +**Goal**: "Based on your order history, you might like these r
+          +estaurants/dishes."                                           
+      210  
+      373 -22. Generate synthetic order data script in `notebooks/` if re
+          -al data is sparse.                                            
+      374 -23. Implement `upsell/train.py` — co-occurrence training pipel
+          -ine.                                                          
+      375 -24. Run training on seeded data: `python -m services.upsell.tr
+          -ain`.                                                         
+      376 -25. Implement `upsell/upsell_engine.py` — inference with fallb
+          -ack rules.                                                    
+      377 -26. Implement `upsell/main.py` — `POST /upsell`.              
+      378 -27. Write tests with fixture co-occurrence matrices.          
+      211 +**How it works**:                                             
+      212 +1. **Training**: Fetch user-order history from backend. Build 
+          +a user-item interaction matrix. Train ALS model with `implicit
+          +.als.AlternatingLeastSquares`. Serialize to `model/als_model.p
+          +kl`.                                                          
+      213 +2. **Inference**: Load model, call `model.recommend(userId, us
+          +er_items, N=10)`, return ranked results.                      
+      214 +3. **Cold start** (new user): Fall back to most popular items 
+          +globally.                                                     
+      215  
+      380 -### Phase 5 — Personalized Recommendations (Day 16–20)        
+      216 +**API**:                                                      
+      217 +```                                                           
+      218 +GET /recommendations?userId=...&limit=10                      
+      219 +Response: { "recommendations": [{ "menuItemId", "name", "resta
+          +urantId", "score" }], "isPersonalized": true|false }          
+      220 +```                                                           
+      221  
+      382 -Most data-hungry feature. Implement last once order data is ac
+          -cumulating.                                                   
+      222 +---                                                           
+      223  
+      384 -28. Implement `recommendations/train.py` — ALS training pipeli
+          -ne with MLflow logging.                                       
+      385 -29. Train on seeded order data (or synthetic data).           
+      386 -30. Implement `recommendations/recommender.py` — hybrid scorin
+          -g with cold-start fallback.                                   
+      387 -31. Implement `recommendations/main.py` — `POST /recommend`.  
+      388 -32. Set up nightly training cron (GitHub Actions `schedule:` t
+          -rigger or system cron calling `train.py`).                    
+      389 -33. Write tests for recommender scoring logic.                
+      224 +## 5. Step-by-Step Implementation Order                       
+      225  
+      391 -### Phase 6 — Hardening (Day 21–22)                           
+      226 +### Phase 1 — Shared Infrastructure (Day 1)                   
+      227 +1. Create full `ai/` folder structure                         
+      228 +2. Create `shared/auth.py` — FastAPI dependency that validates
+          + `X-Service-Key` header, raises 401 if missing/wrong          
+      229 +3. Create `shared/models.py` — common Pydantic schemas        
+      230 +4. Create `shared/backend_client.py` — async httpx client     
+      231  
+      393 -34. Add input validation and rate limiting (slowapi) to all Fa
+          -stAPI services.                                               
+      394 -35. Add structured logging (structlog) to all services.       
+      395 -36. Add health check endpoints `GET /health` to every service.
+      396 -37. Update `docker-compose.yml` with resource limits and resta
+          -rt policies.                                                  
+      397 -38. Write end-to-end smoke test script `tests/e2e_smoke.py` th
+          -at calls every service endpoint.                              
+      232 +### Phase 2 — Semantic Search Service (Days 2–3)              
+      233 +5. `cd service-search && pip install fastapi uvicorn openai ch
+          +romadb python-dotenv pydantic httpx`                          
+      234 +6. Create `embedder.py` — `async def embed(texts: list[str]) -
+          +> list[list[float]]`                                          
+      235 +7. Create `indexer.py` — fetch all menu items from backend, ba
+          +tch-embed, upsert to Chroma                                   
+      236 +8. Run `python ../../scripts/seed_index.py` to populate Chroma
+      237 +9. Create `searcher.py` — query Chroma, return ranked results 
+      238 +10. Create `main.py` — FastAPI app with `POST /search` route +
+          + auth dependency                                              
+      239 +11. Test: `curl -X POST http://localhost:8001/search -H "X-Ser
+          +vice-Key: ..." -d '{"query":"pizza","limit":5}'`              
+      240  
+      399 ----                                                           
+      241 +### Phase 3 — Chatbot Service (Days 4–6)                      
+      242 +12. `cd service-chatbot && pip install fastapi uvicorn openai 
+          +python-dotenv pydantic httpx`                                 
+      243 +13. Create `tools.py` — all 5 tool definitions matching OpenAI
+          + tool schema                                                  
+      244 +14. Create `session.py` — `dict[sessionId, list[Message]]` in-
+          +memory store, auto-expire after 30 min                        
+      245 +15. Create `main.py` — `POST /chat`: load session, call GPT-4o
+          + with tools, execute tool calls, return reply                 
+      246 +16. Test with a multi-turn conversation                       
+      247  
+      401 -## 6. Environment Variables / API Keys                        
+      248 +### Phase 4 — Sentiment Analysis Service (Days 7–9)           
+      249 +17. `cd service-sentiment && pip install fastapi uvicorn opena
+          +i python-dotenv pydantic`                                     
+      250 +18. Create `classifier.py` — single async function wrapping GP
+          +T-4o-mini call + Pydantic parsing                             
+      251 +19. Create `batch.py` — fetch all reviews, classify, write bac
+          +k to backend                                                  
+      252 +20. Create `main.py` — `POST /analyze` and `POST /batch` route
+          +s                                                             
+      253 +21. Run `batch.py` once to classify all existing reviews      
+      254  
+      403 -Create `ai/.env` (never commit — add to `.gitignore`). Use `ai
+          -/.env.example` as the template.                               
+      255 +### Phase 5 — Upsell Engine (Days 10–13)                      
+      256 +22. `cd service-upsell && pip install fastapi uvicorn numpy sc
+          +ipy httpx pydantic python-dotenv`                             
+      257 +23. Create `cooccurrence.py` — build + normalize matrix from o
+          +rder data                                                     
+      258 +24. Create `trainer.py` — fetch orders, build matrix, save `mo
+          +del/cooccurrence.pkl`                                         
+      259 +25. Run `python trainer.py` to generate first model           
+      260 +26. Create `main.py` — load model on startup, `POST /upsell` r
+          +oute                                                          
+      261  
+      405 -```env                                                        
+      406 -# ── LLM APIs ────────────────────────────────────────────────
+          -──────────────────                                            
+      407 -OPENAI_API_KEY=sk-...                        # Required for se
+          -arch, chatbot, sentiment                                      
+      408 -ANTHROPIC_API_KEY=sk-ant-...                 # Optional fallba
+          -ck LLM (chatbot)                                              
+      409 -LLM_PROVIDER=openai                          # "openai" | "ant
+          -hropic"                                                       
+      262 +### Phase 6 — Recommendations (Days 14–16)                    
+      263 +27. `cd service-recommendations && pip install fastapi uvicorn
+          + implicit numpy scipy httpx pydantic python-dotenv`           
+      264 +28. Create `als_model.py` — build user-item matrix, train ALS,
+          + inference with cold-start fallback                           
+      265 +29. Create `trainer.py` — fetch order history, train, save `mo
+          +del/als_model.pkl`                                            
+      266 +30. Run `python trainer.py` to generate first model           
+      267 +31. Create `main.py` — load model on startup, `GET /recommenda
+          +tions` route                                                  
+      268  
+      411 -# ── Vector Database ─────────────────────────────────────────
+          -──────────────────                                            
+      412 -VECTOR_DB=chroma                             # "chroma" | "pin
+          -econe"                                                        
+      413 -CHROMA_PERSIST_DIR=./data/chroma             # Local Chroma st
+          -orage path                                                    
+      269 +### Phase 7 — Integration + Scripts (Day 17)                  
+      270 +32. Write `scripts/seed_index.py`                             
+      271 +33. Write `scripts/retrain_all.py` — calls upsell + recommenda
+          +tions trainers                                                
+      272 +34. Write `scripts/test_services.sh` — smoke-tests all 5 servi
+          +ces with curl                                                 
+      273 +35. Run `bash scripts/test_services.sh` — all pass            
+      274  
+      415 -# For production (Pinecone):                                  
+      416 -PINECONE_API_KEY=...                                          
+      417 -PINECONE_ENVIRONMENT=us-east-1-aws                            
+      418 -PINECONE_INDEX_NAME=restaurant-menu                           
+      275 +---                                                           
+      276  
+      420 -# ── Backend REST API ────────────────────────────────────────
+          -──────────────────                                            
+      421 -BACKEND_BASE_URL=http://localhost:3000       # Backend API bas
+          -e URL                                                         
+      422 -BACKEND_API_KEY=...                          # Service-to-serv
+          -ice auth token                                                
+      277 +## 6. Environment Variables                                   
+      278  
+      424 -# ── Service Ports ───────────────────────────────────────────
+          -──────────────────                                            
+      425 -RECOMMENDATIONS_PORT=8001                                     
+      426 -SEARCH_PORT=8002                                              
+      427 -CHATBOT_PORT=8003                                             
+      428 -SENTIMENT_PORT=8004                                           
+      429 -UPSELL_PORT=8005                                              
+      279 +Each service has its own `.env` file. Create `.env.example` in
+          + each service folder (commit that, not the real `.env`).      
+      280  
+      431 -# ── MLflow ──────────────────────────────────────────────────
+          -──────────────────                                            
+      432 -MLFLOW_TRACKING_URI=http://localhost:5000                     
+      433 -MLFLOW_EXPERIMENT_NAME=restaurant-ai                          
+      281 +```dotenv                                                     
+      282 +# ai/service-*/. env (never commit)                           
+      283  
+      435 -# ── Application ─────────────────────────────────────────────
+          -──────────────────                                            
+      436 -LOG_LEVEL=INFO                               # DEBUG | INFO | 
+          -WARNING                                                       
+      437 -ENVIRONMENT=development                      # development | p
+          -roduction                                                     
+      284 +OPENAI_API_KEY=sk-...                                         
+      285 +SERVICE_KEY=replace_with_shared_secret_matching_backend       
+      286 +BACKEND_API_URL=http://localhost:3000/api/v1                  
+      287 +CHROMA_PATH=./chroma_data          # only service-search      
+      288 +PORT=8001                           # 8001–8005 per service   
+      289  ```
+      290  
+      291  ---
+      292  
+      442 -## 7. How to Run and Test Locally                             
+      293 +## 7. How to Run Locally                                      
+      294  
+      295  ### Prerequisites
+      296 +- Python 3.11+, pip                                           
+      297 +- Backend running on port 3000                                
+      298  
+      446 -- Python 3.11+                                                
+      447 -- Docker and Docker Compose                                   
+      448 -- An OpenAI API key (minimum requirement — all 5 features work
+          - with OpenAI alone)                                           
+      449 -                                                              
+      450 -### Option A — Docker Compose (Recommended)                   
+      451 -                                                              
+      299 +### Start a single service                                    
+      300  ```bash
+      453 -# 1. Copy and fill in env vars                                
+      454 -cp ai/.env.example ai/.env                                    
+      455 -# Edit ai/.env with your API keys                             
+      456 -                                                              
+      457 -# 2. Build and start all AI services + MLflow                 
+      458 -cd ai                                                         
+      459 -docker compose up --build                                     
+      460 -                                                              
+      461 -# Services are now available:                                 
+      462 -#   Recommendations: http://localhost:8001/docs               
+      463 -#   Search:          http://localhost:8002/docs               
+      464 -#   Chatbot:         http://localhost:8003/docs               
+      465 -#   Sentiment:       http://localhost:8004/docs               
+      466 -#   Upsell:          http://localhost:8005/docs               
+      467 -#   MLflow UI:       http://localhost:5000                    
+      301 +cd ai/service-search                                          
+      302 +pip install -r requirements.txt                               
+      303 +cp .env.example .env   # fill in real values                  
+      304 +uvicorn main:app --reload --port 8001                         
+      305  ```
+      306  
+      470 -### Option B — Individual Service (Faster for Development)    
+      471 -                                                              
+      307 +### Start all 5 services (5 terminals)                        
+      308  ```bash
+      473 -# From the repo root                                          
+      474 -cd ai                                                         
+      475 -                                                              
+      476 -# Create and activate virtual environment                     
+      477 -python -m venv .venv                                          
+      478 -.venv\Scripts\activate          # Windows                     
+      479 -# source .venv/bin/activate     # macOS/Linux                 
+      480 -                                                              
+      481 -# Install dependencies for the service you're working on      
+      482 -pip install -r services/search/requirements.txt               
+      483 -pip install -r shared/requirements.txt                        
+      484 -                                                              
+      485 -# Copy env file and fill in keys                              
+      486 -cp .env.example .env                                          
+      487 -                                                              
+      488 -# Build the search index (one-time setup)                     
+      489 -python -m services.search.indexer                             
+      490 -                                                              
+      491 -# Start the search service                                    
+      492 -uvicorn services.search.main:app --reload --port 8002         
+      493 -                                                              
+      494 -# Test it                                                     
+      495 -curl "http://localhost:8002/search?q=spicy+chicken&limit=5"   
+      309 +cd ai/service-search && uvicorn main:app --reload --port 8001 
+      310 +cd ai/service-chatbot && uvicorn main:app --reload --port 8002
+      311 +cd ai/service-sentiment && uvicorn main:app --reload --port 80
+          +03                                                            
+      312 +cd ai/service-upsell && uvicorn main:app --reload --port 8004 
+      313 +cd ai/service-recommendations && uvicorn main:app --reload --p
+          +ort 8005                                                      
+      314  ```
+      315  
+      498 -### Running Training Scripts                                  
+      499 -                                                              
+      316 +### First-time setup                                          
+      317  ```bash
+      501 -# Activate venv (if using Option B)                           
+      502 -source ai/.venv/bin/activate                                  
+      318 +# Seed search index (after backend has data)                  
+      319 +python ai/scripts/seed_index.py                               
+      320  
+      504 -# Train recommendation model                                  
+      505 -python -m services.recommendations.train                      
+      321 +# Train offline models (after orders accumulate)              
+      322 +python ai/scripts/retrain_all.py                              
+      323  
+      507 -# Train upsell co-occurrence model                            
+      508 -python -m services.upsell.train                               
+      509 -                                                              
+      510 -# Rebuild search index (after menu changes)                   
+      511 -python -m services.search.indexer                             
+      324 +# Smoke test all services                                     
+      325 +bash ai/scripts/test_services.sh                              
+      326  ```
+      327  
+      514 -### Running Tests                                             
+      328 +### API docs                                                  
+      329 +FastAPI auto-generates Swagger UI at `http://localhost:800x/do
+          +cs` for each service.                                         
+      330  
+      516 -```bash                                                       
+      517 -cd ai                                                         
+      518 -                                                              
+      519 -# Install test dependencies                                   
+      520 -pip install pytest httpx respx pytest-asyncio                 
+      521 -                                                              
+      522 -# Run all tests                                               
+      523 -pytest tests/ -v                                              
+      524 -                                                              
+      525 -# Run tests for a specific service                            
+      526 -pytest tests/test_search.py -v                                
+      527 -                                                              
+      528 -# Run end-to-end smoke test (requires all services running)   
+      529 -python tests/e2e_smoke.py                                     
+      530 -```                                                           
+      531 -                                                              
+      532 -### Interacting with FastAPI Docs                             
+      533 -                                                              
+      534 -Every service auto-generates interactive API docs. With any se
+          -rvice running locally, open:                                  
+      535 -                                                              
+      536 -```                                                           
+      537 -http://localhost:{PORT}/docs    # Swagger UI — try endpoints i
+          -n the browser                                                 
+      538 -http://localhost:{PORT}/redoc   # ReDoc — cleaner reading view
+      539 -http://localhost:{PORT}/health  # Health check — returns { "st
+          -atus": "ok" }                                                 
+      540 -```                                                           
+      541 -                                                              
+      331  ---
+      332  
+      544 -## 8. Backend Integration Contract                            
+      333 +## Key Design Decisions                                       
+      334  
+      546 -The backend team needs to add the following proxy routes that 
+          -delegate to the AI microservices. All AI services are internal
+          - and not directly exposed to the internet.                    
+      547 -                                                              
+      548 -| Frontend/Backend calls | AI Service endpoint | Service |    
+      549 -|---|---|---|                                                 
+      550 -| `GET /api/ai/search?q=...` | `GET http://localhost:8002/sear
+          -ch` | search |                                                
+      551 -| `POST /api/ai/recommendations` | `POST http://localhost:8001
+          -/recommend` | recommendations |                               
+      552 -| `POST /api/ai/chat` | `POST http://localhost:8003/chat` | ch
+          -atbot |                                                       
+      553 -| `WS /api/ai/chat/ws/{id}` | `WS ws://localhost:8003/chat/ws/
+          -{id}` | chatbot |                                             
+      554 -| `POST /api/ai/analyze-review` (internal async) | `POST http:
+          -//localhost:8004/analyze-review` | sentiment |                
+      555 -| `POST /api/ai/upsell` | `POST http://localhost:8005/upsell` 
+          -| upsell |                                                    
+      556 -                                                              
+      557 -The backend uses `BACKEND_API_KEY` in an `X-Service-Key` heade
+          -r on any call back into itself from the AI services. AI servic
+          -es are not publicly routable.                                 
+      558 -                                                              
+      559 ----                                                           
+      560 -                                                              
+      561 -## 9. Bias and Safety Checklist                               
+      562 -                                                              
+      563 -Before shipping any feature:                                  
+      564 -                                                              
+      565 -- Recommendations: audit top-k outputs for cuisine/price diver
+          -sity; add diversity re-ranking if a single cuisine dominates. 
+      566 -- Chatbot: add a content moderation layer (OpenAI Moderation A
+          -PI) on all user inputs before passing to the LLM. Log all flag
+          -ged inputs.                                                   
+      567 -- Sentiment: validate pipeline outputs on a gold-standard set 
+          -of 50 manually labeled reviews. Target F1 > 0.80.             
+      568 -- Search: test queries in multiple languages; ensure non-Engli
+          -sh menu items surface correctly.                              
+      569 -- Upsell: cap suggestion confidence to prevent exploitative pa
+          -iring (e.g., always up-selling the highest-margin item regardl
+          -ess of fit).                                                  
+      570 -                                                              
+      571 ----                                                           
+      572 -                                                              
+      573 -*Last updated: 2026-05-12 | Author: AI Engineer | Model: claud
+          -e-sonnet-4-6*                                                 
+      335 +| Decision | Reason |                                         
+      336 +|----------|--------|                                         
+      337 +| Separate microservices per feature | Independent deploy/rest
+          +art; backend team never touches Python |                      
+      338 +| `text-embedding-3-small` | Cheap ($0.02/1M tokens), 1536-dim
+          +, excellent quality |                                         
+      339 +| Chroma (local) → Pinecone (prod) | Zero Docker dependency in
+          + dev; swap via env var |                                      
+      340 +| GPT-4o-mini for sentiment | 10× cheaper than GPT-4o; classif
+          +ication quality is acceptable |                               
+      341 +| `implicit` ALS | Industry standard for implicit feedback; se
+          +rializes to small .pkl |                                      
+      342 +| In-memory sessions for chatbot | No Redis required for MVP |
+      343 +| Data-hungry features built last | Search and chatbot demo va
+          +lue on Day 3; recommendations need weeks of order data |      
+● All 4 plan files are created. Let me verify the final structure:
+
+● Bash(Get-ChildItem
+      "C:\Users\User\Desktop\arman-personal-dev\n-factorial\online-restaurant"
+      -Recurse -Filter "PLAN.md" | Select-Object FullName, Length)
+  ⎿  Error: Exit code 127
+     /usr/bin/bash: line 1: Get-ChildItem: command not found
+     /usr/bin/bash: line 1: Select-Object: command not found
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+● All 4 files are in place. Here's what was created:
+
+  online-restaurant/
+  ├── backend/PLAN.md   (14 KB)
+  ├── frontend/PLAN.md  (14 KB)
+  ├── ai/PLAN.md        (14 KB)
+  └── qa/PLAN.md        (22 KB)
+
+  ---
+  Each engineer has a complete, standalone instruction document:
+
+  Back-end Engineer (backend/PLAN.md) — Node.js 20 + Express + TypeScript +
+  PostgreSQL + Prisma. Covers the full data schema (User, Restaurant, MenuItem,
+  Order, OrderItem), every REST endpoint with request/response shapes, and a
+  9-phase build order from scaffold through hardening.
+
+  Front-end Engineer (frontend/PLAN.md) — React 18 + Vite + Tailwind + shadcn/ui
+   + Zustand + TanStack Query. Covers all 7 pages, 15 components, the Axios
+  client with auth interceptors, and a 12-phase build order.
+
+  AI Engineer (ai/PLAN.md) — 5 independent Python FastAPI microservices (ports
+  8001–8005): Semantic Search, Chatbot (GPT-4o function calling), Sentiment
+  Analysis, Upsell Engine, and Personalized Recommendations. Data-hungry
+  features are intentionally scheduled last.
+
+  Q&A Engineer (qa/PLAN.md) — Full testing pyramid: Jest unit tests, Supertest
+  integration tests, Newman API collections, Playwright E2E (Chrome + Firefox),
+  k6 performance smoke test, and OWASP ZAP security scan. Includes the complete
+  GitHub Actions CI pipeline and 40+ named test cases (AUTH-01–12, REST, MENU,
+  ORD, AI series).
+
+✻ Cooked for 12m 19s
+
+> push to github                                                                
+
+● Let me check the current git status first.
+
+● Bash(cd
+      "/c/Users/User/Desktop/arman-personal-dev/n-factorial/online-restaurant"
+      && git status && git log --oneline -3)
+  ⎿  On branch main
+     Your branch is up to date with 'origin/main'.
+     … +10 lines (ctrl+o to expand)
+
+● Bash(cd
+      "/c/Users/User/Desktop/arman-personal-dev/n-factorial/online-restaurant"
+      && git add backend/PLAN.md frontend/PLAN.md ai/PLAN.md qa/PLAN.md && git
+      commit -m "…)
+  ⎿  warning: in the working copy of 'ai/PLAN.md', LF will be replaced by C
+     RLF the next time Git touches it
+     warning: in the working copy of 'backend/PLAN.md', LF will be replaced
+     … +11 lines (ctrl+o to expand)
+
+● Bash(cd
+      "/c/Users/User/Desktop/arman-personal-dev/n-factorial/online-restaurant"
+      && git push origin main)
+  ⎿  To https://github.com/abdraymd/online-restaurant.git
+        1f8c291..7bb8b4b  main -> main
+
+● Pushed successfully to https://github.com/abdraymd/online-restaurant. The
+  commit adds all 4 PLAN.md files — each engineer can now clone the repo, open
+  their folder, and start vibecoding from their plan.
+
+✻ Cogitated for 20s
