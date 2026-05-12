@@ -81,6 +81,8 @@ def backend_headers() -> dict[str, str]:
 def search_menu(query: str) -> str:
     """Search menu items by a customer's natural language query."""
     context = current_context()
+    if not context.get("restaurantId"):
+        return "No restaurantId was provided."
     params = {"query": query, "restaurantId": context.get("restaurantId")}
     response = requests.get(f"{BACKEND_API_URL}/menu-items", params=params, headers=backend_headers(), timeout=10)
     if not response.ok:
@@ -119,6 +121,8 @@ def view_cart() -> str:
 def place_order(deliveryAddress: str) -> str:
     """Place the current cart as an order after confirming cart contents and delivery address."""
     context = current_context()
+    if not context.get("restaurantId"):
+        return "No restaurantId was provided."
     session = context["session"]
     if not session["cart"]:
         return "Cart is empty."
