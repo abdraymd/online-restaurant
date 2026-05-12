@@ -31,8 +31,6 @@ model User {
   updatedAt    DateTime @updatedAt
 
   orders       Order[]
-
-  @@index([email])
 }
 
 model Restaurant {
