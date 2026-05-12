@@ -4,6 +4,12 @@ End-to-end tests for the **online-restaurant** project, scoped to the
 `home → menu → cart → auth → order` user flow. AI-chatbot flows are
 intentionally out of scope.
 
+## Deliverables
+
+- **Notion report** — [QA — E2E Testing](https://www.notion.so/QA-E2E-Testing-home-menu-cart-auth-order-35e4aac848fc813296b0f3c40e9f0ba0) (child of the *Online restaurant* page). Test cases, run results, QA findings (bugs), how-to-run.
+- **Walkthrough video** — `qa/walkthrough.mp4` (H.264 MP4, slowed 2×, ~36 s, no audio). Concatenated from the 6 per-spec recordings in narrative order. Telegram-friendly.
+- **Procedure doc** — `../ai-rules/qa_Timerlan.md`. Steps taken, rules followed, MCPs/tools used, data flow through the project.
+
 ## Prerequisites
 
 The full Docker dev stack must already be running on the host before you
