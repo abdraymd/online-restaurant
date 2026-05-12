@@ -2,6 +2,8 @@ import os
 import time
 from typing import Any, Literal
 
+import json
+
 import requests
 from dotenv import dotenv_values, load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -114,6 +116,38 @@ def get_restaurant_info() -> str:
 
 
 @tool
+def get_restaurants(search: str = "", page: int = 1, limit: int = 5, isOpen: bool | None = None) -> str:
+    """Get a list of restaurants. Supports search by name, pagination, and filtering by open status."""
+    params: dict[str, Any] = {"page": page, "limit": limit}
+    if search:
+        params["search"] = search
+    if isOpen is not None:
+        params["isOpen"] = str(isOpen).lower()
+    response = requests.get(f"{BACKEND_API_URL}/restaurants", params=params, headers=backend_headers(), timeout=10)
+    if not response.ok:
+        return f"Error {response.status_code}: {response.text}"
+    return response.text
+
+
+@tool
+def find_restaurant(restaurants_json: str) -> str:
+    """Pick the first restaurant from a get_restaurants result and return its summary. Always call get_restaurants first, then pass its output here."""
+    data = json.loads(restaurants_json)
+    items = data if isinstance(data, list) else data.get("data") or data.get("items") or []
+    if not items:
+        return "No restaurants found."
+    r = items[0]
+    return json.dumps({
+        "id": r.get("id") or r.get("_id"),
+        "name": r.get("name"),
+        "description": r.get("description"),
+        "address": r.get("address"),
+        "phone": r.get("phone"),
+        "isOpen": r.get("isOpen"),
+    })
+
+
+@tool
 def add_to_cart(menuItemId: str, quantity: int, name: str = "", price: float = 0, notes: str = "") -> str:
     """Add a menu item to the current session cart."""
     session = current_context()["session"]
@@ -154,12 +188,12 @@ def place_order(deliveryAddress: str) -> str:
 
 
 llm = ChatOpenAI(model=OPENAI_CHAT_MODEL, temperature=0, api_key=env_value("OPENAI_API_KEY"))
-tools = [search_menu, get_restaurant_info, add_to_cart, view_cart, place_order]
+tools = [search_menu, get_restaurant_info, get_restaurants, find_restaurant, add_to_cart, view_cart, place_order]
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are an online restaurant ordering assistant. Use tools for menu, restaurant, cart, and order actions. Do not invent menu items, prices, policies, order IDs, or delivery estimates. Confirm items, quantities, restaurant, and delivery address before placing an order.",
+            "You are an online restaurant ordering assistant. Use tools for menu, restaurant, cart, and order actions. Do not invent menu items, prices, policies, order IDs, or delivery estimates. Confirm items, quantities, restaurant, and delivery address before placing an order. When the user asks to find a specific type of restaurant (e.g. 'burger restaurant', 'sushi place'), first call get_restaurants with a search query, then pass its raw output to find_restaurant to get a summary of the best match.",
         ),
         MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
