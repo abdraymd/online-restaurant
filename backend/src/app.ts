@@ -5,6 +5,7 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import { config } from './config'
 import { errorHandler } from './middleware/errorHandler'
+import authRouter from './modules/auth/auth.router'
 
 export function createApp() {
   const app = express()
@@ -24,7 +25,8 @@ export function createApp() {
   // Health check
   app.get('/health', (_req, res) => res.json({ status: 'ok' }))
 
-  // Routers will be mounted here by each module (imported in index.ts)
+  app.use('/api/v1/auth', authRouter)
+
   app.use(errorHandler)
 
   return app
