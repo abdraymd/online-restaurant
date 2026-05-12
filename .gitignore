@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+ai/.env
+ai/**/.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
