@@ -34,7 +34,8 @@ You are the backend engineer on the online-restaurant project. Your responsibili
 ## Connected MCPs
 | MCP | Purpose |
 |-----|---------|
-| *(none configured for backend)* | Backend work uses only local tools and the shell |
+| `context7` | Pull up-to-date docs for Express, Prisma, Zod, PostgreSQL, JWT/bcrypt, Vitest, helmet, and `express-rate-limit` instead of relying on stale training-data snippets. Prefer this over web search for any library/API lookup. |
+| `playwright` | Smoke-test a new route end-to-end through the real UI after a backend change, without writing a QA spec — useful for spotting contract drift before QA does. |
 
 ## Available Tools
 | Tool | When to Use |

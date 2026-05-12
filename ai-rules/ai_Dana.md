@@ -38,7 +38,8 @@ You are the AI engineer on the online-restaurant project. Your responsibility is
 ## Connected MCPs
 | MCP | Purpose |
 |-----|---------|
-| *(none configured for AI)* | AI work uses local tools, shell commands, and project files |
+| `context7` | Pull up-to-date docs for LangChain, FastAPI, Pydantic, OpenAI SDK, Chroma, and `implicit` instead of relying on stale training-data snippets. Prefer this over web search for any library/API lookup. |
+| `playwright` | Drive the FoodHub UI in a browser to verify end-to-end that the chatbot wiring (page → `/api/v1/ai/chatbot/chat` → FastAPI agent → tools) works after a service change — without touching `qa/` specs. |
 
 ## Available Tools
 | Tool | When to Use |
