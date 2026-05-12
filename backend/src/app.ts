@@ -7,6 +7,7 @@ import { config } from './config'
 import { errorHandler } from './middleware/errorHandler'
 import authRouter from './modules/auth/auth.router'
 import restaurantsRouter from './modules/restaurants/restaurants.router'
+import { nestedRouter, flatRouter } from './modules/menu-items/menu-items.router'
 
 export function createApp() {
   const app = express()
@@ -28,6 +29,8 @@ export function createApp() {
 
   app.use('/api/v1/auth', authRouter)
   app.use('/api/v1/restaurants', restaurantsRouter)
+  app.use('/api/v1/restaurants/:restaurantId/menu-items', nestedRouter)
+  app.use('/api/v1/menu-items', flatRouter)
 
   app.use(errorHandler)
 
