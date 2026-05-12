@@ -7,6 +7,8 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default('7d'),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  AI_CHATBOT_URL: z.string().default('http://localhost:8002'),
+  SERVICE_KEY: z.string().default(''),
 })
 
 export const config = envSchema.parse(process.env)

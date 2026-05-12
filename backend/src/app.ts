@@ -10,6 +10,7 @@ import restaurantsRouter from './modules/restaurants/restaurants.router'
 import { nestedRouter, flatRouter } from './modules/menu-items/menu-items.router'
 import ordersRouter from './modules/orders/orders.router'
 import usersRouter from './modules/users/users.router'
+import aiRouter from './modules/ai/ai.router'
 
 export function createApp() {
   const app = express()
@@ -35,6 +36,7 @@ export function createApp() {
   app.use('/api/v1/menu-items', flatRouter)
   app.use('/api/v1/orders', ordersRouter)
   app.use('/api/v1/users', usersRouter)
+  app.use('/api/v1/ai', aiRouter)
 
   app.use(errorHandler)
 

@@ -38,3 +38,11 @@ export async function removeHandler(req: Request<{ id: string }>, res: Response)
   await service.remove(req.params.id)
   res.status(204).send()
 }
+
+export async function searchHandler(req: Request, res: Response) {
+  const query = req.query.query as string | undefined
+  const restaurantId = req.query.restaurantId as string | undefined
+  const isAvailable = req.query.isAvailable !== 'false'
+  const items = await service.search({ query, restaurantId, isAvailable })
+  res.json(items)
+}

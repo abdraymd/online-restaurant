@@ -37,3 +37,21 @@ export async function update(id: string, data: {
 export async function remove(id: string) {
   await prisma.menuItem.delete({ where: { id } })
 }
+
+export async function search(params: { query?: string; restaurantId?: string; isAvailable?: boolean }) {
+  const { query, restaurantId, isAvailable = true } = params
+  return prisma.menuItem.findMany({
+    where: {
+      ...(restaurantId && { restaurantId }),
+      isAvailable,
+      ...(query && {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+          { category: { contains: query, mode: 'insensitive' } },
+        ],
+      }),
+    },
+    orderBy: [{ category: 'asc' }, { name: 'asc' }],
+  })
+}
