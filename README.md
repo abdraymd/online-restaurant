@@ -61,39 +61,7 @@ online-restaurant/
 
 ## Quick Start
 
-Prerequisites: Node.js 20 LTS, Python 3.11+, PostgreSQL 16 (Docker recommended), Docker (for QA tools).
-
-```bash
-# 1. Database
-docker run --name restaurant-pg \
-  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password \
-  -e POSTGRES_DB=restaurant_db -p 5432:5432 -d postgres:16-alpine
-
-# 2. Backend (port 3000)
-cd backend
-npm install
-cp .env.example .env
-npm run db:migrate
-npm run dev
-
-# 3. Frontend (port 5173)
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-
-# 4. AI services (ports 8001–8005, run in separate terminals)
-cd ai/service-search && pip install -r requirements.txt && uvicorn main:app --reload --port 8001
-# repeat for service-chatbot (8002), service-sentiment (8003),
-# service-upsell (8004), service-recommendations (8005)
-
-# 5. Tests
-cd qa
-npm install
-npm run test:all
-```
-
-See each track's `PLAN.md` for full setup, environment variables, and implementation phases.
+See [INSTALL.md](INSTALL.md) for full setup instructions, environment variables, and Docker Compose commands.
 
 ## Environment Variables
 
