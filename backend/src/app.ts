@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit'
 import { config } from './config'
 import { errorHandler } from './middleware/errorHandler'
 import authRouter from './modules/auth/auth.router'
+import restaurantsRouter from './modules/restaurants/restaurants.router'
 
 export function createApp() {
   const app = express()
@@ -26,6 +27,7 @@ export function createApp() {
   app.get('/health', (_req, res) => res.json({ status: 'ok' }))
 
   app.use('/api/v1/auth', authRouter)
+  app.use('/api/v1/restaurants', restaurantsRouter)
 
   app.use(errorHandler)
 
